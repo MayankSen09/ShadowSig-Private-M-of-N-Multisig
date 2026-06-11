@@ -1,0 +1,141 @@
+version: "3.9"
+
+services:
+  # ============================================================
+  # PostgreSQL
+  # ============================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: shadowsig-postgres
+    environment:
+      POSTGRES_DB: shadowsig
+      POSTGRES_USER: shadowsig
+      POSTGRES_PASSWORD: shadowsig_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../apps/api/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shadowsig"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # Redis
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: shadowsig-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # NATS (Event Streaming)
+  # ============================================================
+  nats:
+    image: nats:2-alpine
+    container_name: shadowsig-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["--js", "--sd", "/data"]
+    volumes:
+      - nats_data:/data
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # API Gateway (Rust)
+  # ============================================================
+  api:
+    build:
+      context: ../../apps/api
+      dockerfile: ../../infrastructure/docker/Dockerfile.api
+    container_name: shadowsig-api
+    environment:
+      DATABASE_URL: postgres://shadowsig:shadowsig_dev@postgres:5432/shadowsig
+      REDIS_URL: redis://redis:6379
+      NATS_URL: nats://nats:4222
+      RUST_LOG: shadowsig=debug,tower_http=debug
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # Web Frontend (Next.js)
+  # ============================================================
+  web:
+    build:
+      context: ../../apps/web
+      dockerfile: ../../infrastructure/docker/Dockerfile.web
+    container_name: shadowsig-web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # Prometheus
+  # ============================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: shadowsig-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # Grafana
+  # ============================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: shadowsig-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - shadowsig
+
+volumes:
+  postgres_data:
+  redis_data:
+  nats_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  shadowsig:
+    driver: bridge
