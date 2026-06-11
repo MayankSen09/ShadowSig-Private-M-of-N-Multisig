@@ -1,0 +1,9 @@
+[package]
+name = "shadowsig-guest"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+sha2.workspace = true
+# risc0-zkvm = { workspace = true, default-features = false, features = ["guest"] }
