@@ -1,0 +1,15 @@
+{
+  "name": "@shadowsig/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"sdk tests placeholder\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
