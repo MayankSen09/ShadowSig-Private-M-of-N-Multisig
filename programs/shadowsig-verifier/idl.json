@@ -1,0 +1,106 @@
+{
+  "version": "0.1.0",
+  "name": "shadowsig_verifier",
+  "instructions": [
+    {
+      "name": "create_multisig",
+      "accounts": [
+        { "name": "multisig_config", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true }
+      ],
+      "args": [
+        { "name": "multisig_id", "type": "bytes32" },
+        { "name": "merkle_root", "type": "bytes32" },
+        { "name": "threshold", "type": "u8" },
+        { "name": "member_count", "type": "u8" }
+      ]
+    },
+    {
+      "name": "create_proposal",
+      "accounts": [
+        { "name": "proposal", "isMut": true, "isSigner": false },
+        { "name": "multisig_config", "isMut": false, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true }
+      ],
+      "args": [
+        { "name": "proposal_id", "type": "bytes32" },
+        { "name": "action_hash", "type": "bytes32" }
+      ]
+    },
+    {
+      "name": "submit_approval",
+      "accounts": [
+        { "name": "proposal", "isMut": true, "isSigner": false },
+        { "name": "multisig_config", "isMut": false, "isSigner": false },
+        { "name": "nullifier_registry", "isMut": true, "isSigner": false }
+      ],
+      "args": [
+        { "name": "nullifier_hash", "type": "bytes32" },
+        { "name": "merkle_root", "type": "bytes32" },
+        { "name": "proposal_id", "type": "bytes32" },
+        { "name": "vote", "type": "bool" },
+        { "name": "receipt", "type": "bytes" }
+      ]
+    },
+    {
+      "name": "execute_proposal",
+      "accounts": [
+        { "name": "proposal", "isMut": true, "isSigner": false },
+        { "name": "multisig_config", "isMut": false, "isSigner": false },
+        { "name": "executor", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        { "name": "proposal_id", "type": "bytes32" }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MultisigConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "multisig_id", "type": "bytes32" },
+          { "name": "merkle_root", "type": "bytes32" },
+          { "name": "threshold", "type": "u8" },
+          { "name": "member_count", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "Proposal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "proposal_id", "type": "bytes32" },
+          { "name": "multisig_id", "type": "bytes32" },
+          { "name": "action_hash", "type": "bytes32" },
+          { "name": "approvals", "type": "u32" },
+          { "name": "executed", "type": "bool" }
+        ]
+      }
+    },
+    {
+      "name": "NullifierRegistry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "nullifier_hash", "type": "bytes32" },
+          { "name": "used", "type": "bool" }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "InvalidProof", "msg": "The zk proof receipt failed verification" },
+    { "code": 6001, "name": "NullifierAlreadyUsed", "msg": "This member has already voted on this proposal" },
+    { "code": 6002, "name": "ProposalExpired", "msg": "The proposal voting period has ended" },
+    { "code": 6003, "name": "ProposalExecuted", "msg": "The proposal has already been executed" },
+    { "code": 6004, "name": "ThresholdNotReached", "msg": "Insufficient approvals to execute" },
+    { "code": 6005, "name": "InvalidMerkleRoot", "msg": "The proof merkle root does not match the multisig config" },
+    { "code": 6006, "name": "InvalidWitness", "msg": "The witness data is malformed" },
+    { "code": 6007, "name": "MultisigNotFound", "msg": "Multisig with given ID does not exist" },
+    { "code": 6008, "name": "ProposalNotFound", "msg": "Proposal with given ID does not exist" },
+    { "code": 6009, "name": "InvalidThreshold", "msg": "Threshold must be > 0 and <= member_count" }
+  ]
+}
