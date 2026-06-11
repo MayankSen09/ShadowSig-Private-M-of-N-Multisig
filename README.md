@@ -24,37 +24,53 @@ ShadowSig is a production-grade privacy-preserving M-of-N multisig platform wher
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         Frontend                             │
-│                    Next.js 15 + React                        │
-│         ┌───────────┬──────────┬──────────────┐             │
-│         │ Dashboard  │ Proposals│ Proof Viewer │             │
-│         └───────────┴──────────┴──────────────┘             │
-└─────────────────────────┬───────────────────────────────────┘
-                          │ REST + WebSocket
-┌─────────────────────────┴───────────────────────────────────┐
-│                      API Gateway (Axum)                       │
-│  ┌──────┐ ┌──────────┐ ┌──────────┐ ┌────────────────────┐ │
-│  │ Auth │ │Rate Limit│ │ Tracing  │ │ Request Aggregation│ │
-│  └──────┘ └──────────┘ └──────────┘ └────────────────────┘ │
-└────┬──────────┬──────────┬──────────┬───────────────────────┘
-     │          │          │          │
-┌────┴───┐ ┌───┴───┐ ┌───┴───┐ ┌───┴──────┐
-│Multisig│ │Proposal│ │ Proof │ │Nullifier │
-│Service │ │Service │ │Service│ │ Service  │
-└────┬───┘ └───┬───┘ └───┬───┘ └───┬──────┘
-     │         │         │         │
-┌────┴─────────┴─────────┴─────────┴──────────────────────────┐
-│                   PostgreSQL + Redis + NATS                   │
-└─────────────────────────────────────────────────────────────┘
-                          │
-┌─────────────────────────┴───────────────────────────────────┐
-│                 LEZ (Logos Execution Zone)                    │
-│         ┌──────────────┐  ┌─────────────────┐               │
-│         │SPEL Contracts │  │ Verifier Program│               │
-│         └──────────────┘  └─────────────────┘               │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    classDef frontend fill:#1e1e2f,stroke:#6c5ce7,stroke-width:2px,color:#fff;
+    classDef gateway fill:#2d3436,stroke:#00cec9,stroke-width:2px,color:#fff;
+    classDef service fill:#2d3436,stroke:#a29bfe,stroke-width:2px,color:#fff;
+    classDef infra fill:#2d3436,stroke:#ffeaa7,stroke-width:2px,color:#fff;
+    classDef lez fill:#2c3e50,stroke:#e74c3c,stroke-width:2px,color:#fff;
+
+    subgraph Frontend [Frontend - Next.js 15 & React]
+        Dashboard:::frontend
+        Proposals:::frontend
+        ProofViewer["Proof Viewer"]:::frontend
+    end
+
+    subgraph APIGateway [API Gateway - Axum]
+        Auth:::gateway
+        RateLimit["Rate Limiter"]:::gateway
+        Tracing:::gateway
+        ReqAgg["Request Aggregator"]:::gateway
+    end
+
+    subgraph Services [Microservices]
+        MultisigSvc["Multisig Service"]:::service
+        ProposalSvc["Proposal Service"]:::service
+        ProofSvc["Proof Service"]:::service
+        NullifierSvc["Nullifier Service"]:::service
+    end
+
+    subgraph Storage [Infrastructure Layer]
+        DB[(PostgreSQL 16)]:::infra
+        Cache[(Redis 7)]:::infra
+        Queue[(NATS Event Bus)]:::infra
+    end
+
+    subgraph LEZ [LEZ - Logos Execution Zone]
+        SPEL["SPEL Smart Contracts"]:::lez
+        Verifier["ZK Verifier Program"]:::lez
+    end
+
+    Frontend -->|REST / WebSockets| APIGateway
+    APIGateway --> MultisigSvc
+    APIGateway --> ProposalSvc
+    APIGateway --> ProofSvc
+    APIGateway --> NullifierSvc
+
+    Services --> Storage
+    Storage --> LEZ
 ```
 
 ## Tech Stack
