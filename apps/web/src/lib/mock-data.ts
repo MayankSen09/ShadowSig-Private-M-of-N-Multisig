@@ -1,0 +1,310 @@
+// ============================================================
+// SHADOWSIG MOCK DATA
+// Realistic mock data for development and demo
+// ============================================================
+
+import type {
+  Multisig,
+  Proposal,
+  ZkProof,
+  Execution,
+  DashboardMetrics,
+  ActivityEvent,
+  ProofLatencyDataPoint,
+  TreasuryAsset,
+  Member,
+} from "./types";
+
+export const mockMetrics: DashboardMetrics = {
+  totalMultisigs: 12,
+  activeProposals: 7,
+  proofsGenerated: 1_847,
+  avgProofLatency: 2_340,
+  treasuryValue: 14_523_890,
+  executionsCompleted: 342,
+  nullifiersConsumed: 3_291,
+  computeUnitsUsed: 892_451,
+};
+
+export const mockMultisigs: Multisig[] = [
+  {
+    id: "ms-001",
+    name: "Protocol Treasury",
+    description: "Core protocol treasury management with shielded governance",
+    threshold: 3,
+    memberCount: 5,
+    merkleRoot: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+    status: "active",
+    createdAt: "2025-01-15T10:00:00Z",
+    updatedAt: "2025-06-08T14:30:00Z",
+    activeProposals: 3,
+    treasuryBalance: 8_250_000,
+  },
+  {
+    id: "ms-002",
+    name: "Grants Committee",
+    description: "Ecosystem grant disbursement with anonymous voting",
+    threshold: 4,
+    memberCount: 7,
+    merkleRoot: "0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c",
+    status: "active",
+    createdAt: "2025-02-20T08:00:00Z",
+    updatedAt: "2025-06-07T12:15:00Z",
+    activeProposals: 2,
+    treasuryBalance: 3_750_000,
+  },
+  {
+    id: "ms-003",
+    name: "Security Council",
+    description: "Emergency response coordination with threshold controls",
+    threshold: 5,
+    memberCount: 9,
+    merkleRoot: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+    status: "active",
+    createdAt: "2025-03-01T12:00:00Z",
+    updatedAt: "2025-06-06T09:45:00Z",
+    activeProposals: 1,
+    treasuryBalance: 1_200_000,
+  },
+  {
+    id: "ms-004",
+    name: "R&D Fund",
+    description: "Research and development funding allocation",
+    threshold: 2,
+    memberCount: 3,
+    merkleRoot: "0x4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e",
+    status: "active",
+    createdAt: "2025-04-10T16:00:00Z",
+    updatedAt: "2025-06-05T11:20:00Z",
+    activeProposals: 1,
+    treasuryBalance: 1_323_890,
+  },
+];
+
+export const mockProposals: Proposal[] = [
+  {
+    id: "prop-001",
+    multisigId: "ms-001",
+    title: "Ecosystem Grant: zk-Bridge Infrastructure",
+    description: "Fund development of cross-chain bridge using Risc0 proofs",
+    actionType: "transfer",
+    actionData: { amount: 500000, asset: "ETH", recipient: "0xgrant..." },
+    approvalCount: 2,
+    threshold: 3,
+    status: "pending",
+    expiresAt: "2025-06-15T00:00:00Z",
+    createdAt: "2025-06-05T10:00:00Z",
+    updatedAt: "2025-06-08T14:00:00Z",
+  },
+  {
+    id: "prop-002",
+    multisigId: "ms-001",
+    title: "Update Threshold Configuration",
+    description: "Increase threshold from 3-of-5 to 4-of-5 for enhanced security",
+    actionType: "config_change",
+    actionData: { newThreshold: 4 },
+    approvalCount: 3,
+    threshold: 3,
+    status: "approved",
+    expiresAt: "2025-06-20T00:00:00Z",
+    createdAt: "2025-06-01T08:00:00Z",
+    updatedAt: "2025-06-07T16:30:00Z",
+  },
+  {
+    id: "prop-003",
+    multisigId: "ms-002",
+    title: "Community Developer Bounty Program",
+    description: "Allocate funds for bug bounty and security audit program",
+    actionType: "transfer",
+    actionData: { amount: 250000, asset: "USDC" },
+    approvalCount: 1,
+    threshold: 4,
+    status: "pending",
+    expiresAt: "2025-06-25T00:00:00Z",
+    createdAt: "2025-06-06T14:00:00Z",
+    updatedAt: "2025-06-08T10:00:00Z",
+  },
+  {
+    id: "prop-004",
+    multisigId: "ms-003",
+    title: "Emergency: Pause Bridge Contract",
+    description: "Pause bridge contract pending security review",
+    actionType: "custom",
+    actionData: { action: "pause_contract", target: "bridge-v2" },
+    approvalCount: 5,
+    threshold: 5,
+    status: "executed",
+    expiresAt: "2025-06-10T00:00:00Z",
+    createdAt: "2025-06-04T02:00:00Z",
+    updatedAt: "2025-06-04T02:45:00Z",
+  },
+  {
+    id: "prop-005",
+    multisigId: "ms-001",
+    title: "Liquidity Provision: DEX Pool",
+    description: "Provide liquidity to the protocol's main trading pair",
+    actionType: "transfer",
+    actionData: { amount: 1000000, asset: "ETH/USDC LP" },
+    approvalCount: 0,
+    threshold: 3,
+    status: "pending",
+    expiresAt: "2025-06-30T00:00:00Z",
+    createdAt: "2025-06-08T09:00:00Z",
+    updatedAt: "2025-06-08T09:00:00Z",
+  },
+];
+
+export const mockProofs: ZkProof[] = [
+  {
+    id: "proof-001",
+    proposalId: "prop-001",
+    status: "verified",
+    computeUnits: 45_200,
+    latencyMs: 2_140,
+    verifierProgram: "lez-multisig-v1",
+    receipt: "0xreceipt001...",
+    createdAt: "2025-06-08T14:00:00Z",
+  },
+  {
+    id: "proof-002",
+    proposalId: "prop-002",
+    status: "verified",
+    computeUnits: 38_900,
+    latencyMs: 1_890,
+    verifierProgram: "lez-multisig-v1",
+    receipt: "0xreceipt002...",
+    createdAt: "2025-06-07T16:30:00Z",
+  },
+  {
+    id: "proof-003",
+    proposalId: "prop-003",
+    status: "generating",
+    computeUnits: 0,
+    latencyMs: 0,
+    verifierProgram: "lez-multisig-v1",
+    receipt: "",
+    createdAt: "2025-06-08T10:00:00Z",
+  },
+  {
+    id: "proof-004",
+    proposalId: "prop-004",
+    status: "verified",
+    computeUnits: 52_100,
+    latencyMs: 2_890,
+    verifierProgram: "lez-emergency-v1",
+    receipt: "0xreceipt004...",
+    createdAt: "2025-06-04T02:30:00Z",
+  },
+];
+
+export const mockExecutions: Execution[] = [
+  {
+    id: "exec-001",
+    proposalId: "prop-002",
+    txHash: "0xtx002abc...",
+    status: "completed",
+    executedAt: "2025-06-07T17:00:00Z",
+    createdAt: "2025-06-07T16:45:00Z",
+  },
+  {
+    id: "exec-002",
+    proposalId: "prop-004",
+    txHash: "0xtx004def...",
+    status: "completed",
+    executedAt: "2025-06-04T02:50:00Z",
+    createdAt: "2025-06-04T02:45:00Z",
+  },
+];
+
+export const mockActivity: ActivityEvent[] = [
+  {
+    id: "evt-001",
+    type: "approval",
+    title: "Anonymous approval submitted",
+    description: "Proposal: zk-Bridge Infrastructure — 2/3 threshold",
+    timestamp: "2025-06-08T14:00:00Z",
+    status: "success",
+  },
+  {
+    id: "evt-002",
+    type: "proof",
+    title: "zk proof verification complete",
+    description: "Proof verified in 2,140ms — 45,200 compute units",
+    timestamp: "2025-06-08T13:58:00Z",
+    status: "success",
+  },
+  {
+    id: "evt-003",
+    type: "proposal",
+    title: "New proposal created",
+    description: "Liquidity Provision: DEX Pool — 0/3 threshold",
+    timestamp: "2025-06-08T09:00:00Z",
+    status: "pending",
+  },
+  {
+    id: "evt-004",
+    type: "execution",
+    title: "Treasury action executed",
+    description: "Threshold configuration updated — tx: 0xtx002...",
+    timestamp: "2025-06-07T17:00:00Z",
+    status: "success",
+  },
+  {
+    id: "evt-005",
+    type: "proof",
+    title: "Proof generation started",
+    description: "Community Developer Bounty — generating proof...",
+    timestamp: "2025-06-08T10:00:00Z",
+    status: "pending",
+  },
+  {
+    id: "evt-006",
+    type: "member",
+    title: "Shielded member joined",
+    description: "New commitment added to Merkle tree — leaf #42",
+    timestamp: "2025-06-06T08:30:00Z",
+    status: "success",
+  },
+  {
+    id: "evt-007",
+    type: "execution",
+    title: "Emergency execution completed",
+    description: "Bridge contract paused — 5/5 unanimous approval",
+    timestamp: "2025-06-04T02:50:00Z",
+    status: "success",
+  },
+  {
+    id: "evt-008",
+    type: "approval",
+    title: "Anonymous approval submitted",
+    description: "Proposal: Update Threshold — 3/3 threshold reached",
+    timestamp: "2025-06-07T16:15:00Z",
+    status: "success",
+  },
+];
+
+export const mockProofLatency: ProofLatencyDataPoint[] = Array.from(
+  { length: 24 },
+  (_, i) => ({
+    timestamp: new Date(
+      Date.now() - (23 - i) * 60 * 60 * 1000
+    ).toISOString(),
+    latencyMs: 1800 + Math.random() * 1200,
+    computeUnits: 35000 + Math.random() * 25000,
+  })
+);
+
+export const mockTreasuryAssets: TreasuryAsset[] = [
+  { symbol: "ETH", name: "Ethereum", balance: 2450.5, value: 8_575_750, change24h: 2.4 },
+  { symbol: "USDC", name: "USD Coin", balance: 3_250_000, value: 3_250_000, change24h: 0.01 },
+  { symbol: "DAI", name: "Dai", balance: 1_800_000, value: 1_798_140, change24h: -0.1 },
+  { symbol: "WBTC", name: "Wrapped Bitcoin", balance: 12.8, value: 900_000, change24h: 1.8 },
+];
+
+export const mockMembers: Member[] = Array.from({ length: 9 }, (_, i) => ({
+  id: `mem-${String(i + 1).padStart(3, "0")}`,
+  multisigId: "ms-001",
+  commitment: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+  leafIndex: i,
+  joinedAt: new Date(2025, 0, 15 + i * 7).toISOString(),
+}));
