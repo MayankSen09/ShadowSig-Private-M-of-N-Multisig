@@ -8,7 +8,7 @@ import { useDashboardStore } from "@/lib/store";
 import {
   LayoutDashboard, Layers, FileText, Shield, Wallet,
   Users, BarChart3, Settings, BookOpen, ChevronLeft,
-  Menu, Zap,
+  Menu,
 } from "lucide-react";
 
 const navItems = [
@@ -20,7 +20,7 @@ const navItems = [
   { href: "/dashboard/members", icon: Users, label: "Members" },
   { href: "/dashboard/analytics", icon: BarChart3, label: "Analytics" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
-  { href: "#", icon: BookOpen, label: "Documentation" },
+  { href: "#", icon: BookOpen, label: "Docs" },
 ];
 
 export function Sidebar() {
@@ -30,14 +30,14 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile toggle */}
-      <button onClick={toggleSidebar} className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-lg glass">
-        <Menu className="h-5 w-5" />
+      <button onClick={toggleSidebar} className="fixed top-3.5 left-3.5 z-50 md:hidden p-1.5 rounded-md border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)]">
+        <Menu className="h-4 w-4 text-[var(--color-text-secondary)]" />
       </button>
 
       {/* Mobile overlay */}
       <AnimatePresence>
         {sidebarOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={toggleSidebar} className="fixed inset-0 bg-black/50 z-40 md:hidden" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={toggleSidebar} className="fixed inset-0 bg-black/60 z-40 md:hidden" />
         )}
       </AnimatePresence>
 
@@ -45,18 +45,18 @@ export function Sidebar() {
       <motion.aside
         initial={false}
         animate={{ width: sidebarOpen ? 240 : 64 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
-          "fixed left-0 top-0 bottom-0 z-40 flex flex-col border-r border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)]",
+          "fixed left-0 top-0 bottom-0 z-40 flex flex-col border-r border-[var(--color-border-primary)] bg-[var(--color-bg-primary)]",
           "max-md:translate-x-0",
           !sidebarOpen && "max-md:-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[var(--color-border-primary)]">
-          <Link href="/" className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-zinc-900/80 border border-white/10 flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-              <Zap className="h-4 w-4 text-cyan-400" />
+        <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--color-border-primary)]">
+          <Link href="/" className="flex items-center gap-2 overflow-hidden">
+            <div className="w-7 h-7 rounded-md bg-[var(--color-accent)] flex items-center justify-center shrink-0">
+              <Shield className="h-3.5 w-3.5 text-white" />
             </div>
             <AnimatePresence>
               {sidebarOpen && (
@@ -71,13 +71,13 @@ export function Sidebar() {
               )}
             </AnimatePresence>
           </Link>
-          <button onClick={toggleSidebar} className="hidden md:flex p-1.5 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors border border-transparent hover:border-white/5">
-            <ChevronLeft className={cn("h-4 w-4 text-[var(--color-text-tertiary)] transition-transform", !sidebarOpen && "rotate-180")} />
+          <button onClick={toggleSidebar} className="hidden md:flex p-1 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors">
+            <ChevronLeft className={cn("h-3.5 w-3.5 text-[var(--color-text-muted)] transition-transform", !sidebarOpen && "rotate-180")} />
           </button>
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto relative">
+        <nav className="flex-1 py-2 px-2 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = item.href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(item.href) && item.href !== "/dashboard";
             return (
@@ -85,24 +85,24 @@ export function Sidebar() {
                 key={item.href + item.label}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors relative group",
+                  "flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] transition-colors relative",
                   isActive
                     ? "text-[var(--color-text-primary)] font-medium"
-                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]"
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active-pill"
-                    className="absolute inset-0 bg-white/5 border border-white/5 rounded-lg"
+                    className="absolute inset-0 bg-[var(--color-accent-subtle)] border border-[var(--color-accent-muted)] rounded-md"
                     style={{ zIndex: -1 }}
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
                 <item.icon
                   className={cn(
-                    "h-4.5 w-4.5 shrink-0 transition-colors",
-                    isActive ? "text-cyan-400" : "text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-primary)]"
+                    "h-4 w-4 shrink-0",
+                    isActive ? "text-[var(--color-accent)]" : "text-[var(--color-text-muted)]"
                   )}
                 />
                 <AnimatePresence mode="popLayout">
@@ -111,7 +111,7 @@ export function Sidebar() {
                       initial={{ opacity: 0, x: -4 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -4 }}
-                      transition={{ duration: 0.15 }}
+                      transition={{ duration: 0.12 }}
                       className="whitespace-nowrap overflow-hidden"
                     >
                       {item.label}
@@ -125,7 +125,6 @@ export function Sidebar() {
 
         {/* Bottom */}
         <div className="p-3 border-t border-[var(--color-border-primary)] space-y-2">
-          {/* Network indicator */}
           <AnimatePresence>
             {sidebarOpen && (
               <motion.div
@@ -134,20 +133,17 @@ export function Sidebar() {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                  <div className="relative flex h-1.5 w-1.5 shrink-0">
-                    <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
-                  </div>
-                  <span className="text-[9px] font-semibold text-emerald-300 uppercase tracking-wider">LEZ Mainnet</span>
-                  <span className="ml-auto text-[8px] text-[var(--color-text-tertiary)] font-mono">v0.1.0</span>
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-[var(--color-bg-tertiary)]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                  <span className="text-[11px] text-[var(--color-text-secondary)]">LEZ Mainnet</span>
+                  <span className="ml-auto text-[10px] text-[var(--color-text-muted)] font-mono">v0.1</span>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-white/[0.02] border border-white/5">
-            <div className="w-7 h-7 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
-              <span className="text-[10px] font-bold font-mono text-cyan-400">SS</span>
+          <div className="flex items-center gap-2 px-2 py-1.5">
+            <div className="w-6 h-6 rounded-full bg-[var(--color-bg-tertiary)] border border-[var(--color-border-primary)] flex items-center justify-center shrink-0">
+              <span className="text-[9px] font-semibold font-mono text-[var(--color-text-secondary)]">SS</span>
             </div>
             <AnimatePresence>
               {sidebarOpen && (
@@ -157,8 +153,8 @@ export function Sidebar() {
                   exit={{ opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <p className="text-xs font-semibold text-[var(--color-text-primary)] truncate">Protocol Treasury</p>
-                  <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">3-of-5 Multisig</p>
+                  <p className="text-[12px] font-medium text-[var(--color-text-primary)] truncate">Protocol Treasury</p>
+                  <p className="text-[10px] text-[var(--color-text-muted)] truncate">3-of-5 Multisig</p>
                 </motion.div>
               )}
             </AnimatePresence>
