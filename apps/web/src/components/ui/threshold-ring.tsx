@@ -45,7 +45,7 @@ export function ThresholdRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.03)"
+          stroke="rgba(255,255,255,0.05)"
           strokeWidth={strokeWidth}
         />
         {/* Progress arc */}
@@ -54,7 +54,7 @@ export function ThresholdRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={isComplete ? "#10b981" : "url(#thresholdGradient)"}
+          stroke={isComplete ? "#10b981" : "#6366f1"}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -65,13 +65,7 @@ export function ThresholdRing({
             ease: [0.4, 0, 0.2, 1],
           }}
         />
-        {/* Gradient definition */}
-        <defs>
-          <linearGradient id="thresholdGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#a855f7" />
-          </linearGradient>
-        </defs>
+
       </svg>
 
       {/* Center content */}
