@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   Shield, Zap, Lock, Eye, Globe, Cpu, RotateCcw, RefreshCw,
-  AlertTriangle, Wallet, ArrowRight, GitBranch, BookOpen, Layers
+  AlertTriangle, Wallet, ArrowRight, GitBranch, Layers
 } from "lucide-react";
 
 const HeroVisualization = dynamic(
@@ -41,7 +41,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Features</a>
             <a href="#architecture" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Architecture</a>
-            <a href="https://github.com" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">GitHub</a>
+            <a href="https://github.com/MayankSen09/ShadowSig-Private-M-of-N-Multisig" target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">GitHub</a>
             <Link href="/dashboard" className="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white hover:opacity-90 transition-opacity">
               Launch App
             </Link>
@@ -51,6 +51,10 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+        {/* Animated gradient mesh background */}
+        <div className="hero-gradient-mesh" />
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 grid-pattern opacity-40" />
         <HeroVisualization />
         {/* Radial gradient overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--color-bg-primary)_70%)]" />
@@ -74,18 +78,26 @@ export default function LandingPage() {
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }} className="flex flex-wrap items-center justify-center gap-4">
-            <Link href="/dashboard" className="group inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white hover:opacity-90 transition-all shadow-[0_0_20px_rgba(0,225,255,0.25)]">
+            <Link href="/dashboard" className="btn-primary">
               Launch App <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <a href="#architecture" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-xl border border-[var(--color-border-secondary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors">
+            <a href="#architecture" className="btn-secondary">
               <Layers className="h-4 w-4" /> View Architecture
             </a>
-            <a href="https://github.com" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-xl border border-[var(--color-border-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors">
+            <a href="https://github.com/MayankSen09/ShadowSig-Private-M-of-N-Multisig" target="_blank" rel="noopener noreferrer" className="btn-secondary text-[var(--color-text-secondary)]">
               <GitBranch className="h-4 w-4" /> GitHub
             </a>
-            <a href="#docs" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-xl border border-[var(--color-border-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors">
-              <BookOpen className="h-4 w-4" /> Documentation
-            </a>
+          </motion.div>
+
+          {/* Trust indicators */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }} className="mt-16 flex flex-wrap items-center justify-center gap-6 text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-widest font-semibold">
+            <span className="flex items-center gap-1.5"><Shield className="h-3 w-3 text-emerald-400" /> End-to-End ZK</span>
+            <span className="w-px h-3 bg-[var(--color-border-primary)]" />
+            <span className="flex items-center gap-1.5"><Lock className="h-3 w-3 text-cyan-400" /> Nullifier Protected</span>
+            <span className="w-px h-3 bg-[var(--color-border-primary)]" />
+            <span className="flex items-center gap-1.5"><Cpu className="h-3 w-3 text-purple-400" /> STARK Verified</span>
+            <span className="w-px h-3 bg-[var(--color-border-primary)]" />
+            <span className="flex items-center gap-1.5"><Globe className="h-3 w-3 text-cyan-400" /> LEZ Native</span>
           </motion.div>
         </div>
 
