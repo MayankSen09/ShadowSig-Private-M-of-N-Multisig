@@ -124,7 +124,24 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom */}
-        <div className="p-3 border-t border-[var(--color-border-primary)]">
+        <div className="p-3 border-t border-[var(--color-border-primary)] space-y-2">
+          {/* Network indicator */}
+          <AnimatePresence>
+            {sidebarOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" /></span>
+                  <span className="text-[9px] font-semibold text-emerald-300 uppercase tracking-wider">LEZ Mainnet</span>
+                  <span className="ml-auto text-[8px] text-[var(--color-text-tertiary)] font-mono">v0.1.0</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-white/[0.02] border border-white/5">
             <div className="w-7 h-7 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
               <span className="text-[10px] font-bold font-mono text-cyan-400">SS</span>
