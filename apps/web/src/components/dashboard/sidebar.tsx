@@ -135,7 +135,10 @@ export function Sidebar() {
                 className="overflow-hidden"
               >
                 <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" /></span>
+                  <div className="relative flex h-1.5 w-1.5 shrink-0">
+                    <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                  </div>
                   <span className="text-[9px] font-semibold text-emerald-300 uppercase tracking-wider">LEZ Mainnet</span>
                   <span className="ml-auto text-[8px] text-[var(--color-text-tertiary)] font-mono">v0.1.0</span>
                 </div>
