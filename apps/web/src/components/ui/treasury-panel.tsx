@@ -15,14 +15,14 @@ export function TreasuryPanel({ assets, totalValue, className }: TreasuryPanelPr
   const total = totalValue || assets.reduce((sum, a) => sum + a.value, 0);
 
   return (
-    <div className={cn("p-4 rounded-xl border border-[var(--color-border-primary)] bg-[var(--color-bg-card)]", className)}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[13px] font-medium">Treasury</h3>
+    <div className={cn("p-5 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] shadow-sm", className)}>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-[15px] font-semibold">Treasury</h3>
         <div className="text-right">
-          <p className="text-sm font-semibold font-mono tracking-tight">
+          <p className="text-[17px] font-semibold tracking-tight">
             {formatCurrency(total)}
           </p>
-          <p className="text-[10px] text-[var(--color-text-muted)]">
+          <p className="text-[11px] text-[var(--color-text-secondary)] uppercase tracking-wide font-medium mt-0.5">
             Total Value
           </p>
         </div>
@@ -39,40 +39,40 @@ export function TreasuryPanel({ assets, totalValue, className }: TreasuryPanelPr
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.04 }}
-              className="flex items-center justify-between py-2.5 px-2 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors"
+              className="flex items-center justify-between py-2 px-2.5 -mx-2.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] transition-colors"
             >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-[var(--color-bg-tertiary)] border border-[var(--color-border-primary)] flex items-center justify-center">
-                  <span className="text-[9px] font-semibold font-mono text-[var(--color-text-secondary)]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-white border border-[var(--color-border-secondary)] shadow-sm flex items-center justify-center">
+                  <span className="text-[10px] font-semibold text-[var(--color-text-primary)]">
                     {asset.symbol.slice(0, 2)}
                   </span>
                 </div>
                 <div>
-                  <p className="text-[12px] font-medium">{asset.symbol}</p>
-                  <p className="text-[10px] text-[var(--color-text-muted)]">{asset.name}</p>
+                  <p className="text-[14px] font-medium text-[var(--color-text-primary)]">{asset.symbol}</p>
+                  <p className="text-[12px] text-[var(--color-text-secondary)]">{asset.name}</p>
                 </div>
               </div>
 
               <div className="text-right">
-                <p className="text-[12px] font-mono font-medium">
+                <p className="text-[14px] font-medium">
                   {formatCurrency(asset.value)}
                 </p>
-                <div className="flex items-center justify-end gap-0.5">
+                <div className="flex items-center justify-end gap-1 mt-0.5">
                   {isNeutral ? (
-                    <Minus className="h-2.5 w-2.5 text-[var(--color-text-muted)]" />
+                    <Minus className="h-3 w-3 text-[var(--color-text-tertiary)]" />
                   ) : isPositive ? (
-                    <TrendingUp className="h-2.5 w-2.5 text-emerald-400" />
+                    <TrendingUp className="h-3 w-3 text-[var(--color-system-green)]" />
                   ) : (
-                    <TrendingDown className="h-2.5 w-2.5 text-red-400" />
+                    <TrendingDown className="h-3 w-3 text-[var(--color-system-red)]" />
                   )}
                   <span
                     className={cn(
-                      "text-[10px] font-mono",
+                      "text-[12px] font-medium",
                       isNeutral
-                        ? "text-[var(--color-text-muted)]"
+                        ? "text-[var(--color-text-tertiary)]"
                         : isPositive
-                        ? "text-emerald-400"
-                        : "text-red-400"
+                        ? "text-[var(--color-system-green)]"
+                        : "text-[var(--color-system-red)]"
                     )}
                   >
                     {isPositive ? "+" : ""}

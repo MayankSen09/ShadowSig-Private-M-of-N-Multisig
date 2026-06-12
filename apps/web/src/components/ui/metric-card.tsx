@@ -1,77 +1,75 @@
-"use client";
-
 import { motion } from "framer-motion";
-import { cn, formatNumber } from "@/lib/utils";
-import { type LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  TrendingUp, TrendingDown, Minus, Layers, FileText,
+  Shield, Clock, Wallet, Zap, Hash, Cpu
+} from "lucide-react";
 
 interface MetricCardProps {
   title: string;
   value: string | number;
-  change?: number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBg?: string;
+  trend?: number;
+  icon: "layers" | "file" | "shield" | "clock" | "wallet" | "zap" | "hash" | "cpu";
   className?: string;
-  suffix?: string;
-  delay?: number;
 }
 
-export function MetricCard({
-  title,
-  value,
-  change,
-  icon: Icon,
-  className,
-  suffix,
-  delay = 0,
-}: MetricCardProps) {
-  const formattedValue = typeof value === "number" ? formatNumber(value) : value;
+const iconMap = {
+  layers: Layers,
+  file: FileText,
+  shield: Shield,
+  clock: Clock,
+  wallet: Wallet,
+  zap: Zap,
+  hash: Hash,
+  cpu: Cpu,
+};
+
+export function MetricCard({ title, value, trend, icon, className }: MetricCardProps) {
+  const Icon = iconMap[icon];
+  const isPositive = trend && trend > 0;
+  const isNeutral = trend === 0 || trend === undefined;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.3 }}
       className={cn(
-        "p-4 rounded-xl border border-[var(--color-border-primary)] bg-[var(--color-bg-card)] flex flex-col justify-between min-h-[110px]",
+        "p-4 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] shadow-sm hover:shadow-[var(--shadow-card)] transition-shadow duration-200",
         className
       )}
     >
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-medium text-[var(--color-text-tertiary)] uppercase tracking-wide">
-            {title}
-          </span>
-          <Icon className="h-3.5 w-3.5 text-[var(--color-text-muted)]" />
-        </div>
-        <p className="text-xl font-semibold font-mono tracking-tight">
-          {formattedValue}
-          {suffix && (
-            <span className="text-xs font-normal text-[var(--color-text-tertiary)] ml-1">
-              {suffix}
-            </span>
-          )}
-        </p>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-[13px] font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
+          {title}
+        </h3>
+        <Icon className="h-4 w-4 text-[var(--color-text-tertiary)]" />
       </div>
 
-      {change !== undefined && (
-        <div className="flex items-center gap-1.5 mt-2.5 pt-2 border-t border-[var(--color-border-primary)]">
-          <div
+      <div className="flex items-baseline gap-2">
+        <span className="text-2xl font-semibold tracking-tight text-[var(--color-text-primary)]">
+          {value}
+        </span>
+      </div>
+
+      {trend !== undefined && (
+        <div className="mt-3 flex items-center gap-1.5">
+          {isPositive ? (
+            <TrendingUp className="h-3.5 w-3.5 text-[var(--color-system-green)]" />
+          ) : isNeutral ? (
+            <Minus className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+          ) : (
+            <TrendingDown className="h-3.5 w-3.5 text-[var(--color-system-red)]" />
+          )}
+          <span
             className={cn(
-              "flex items-center gap-0.5 text-[10px] font-medium",
-              change >= 0
-                ? "text-emerald-400"
-                : "text-red-400"
+              "text-[12px] font-medium",
+              isPositive ? "text-[var(--color-system-green)]" : isNeutral ? "text-[var(--color-text-tertiary)]" : "text-[var(--color-system-red)]"
             )}
           >
-            {change >= 0 ? (
-              <TrendingUp className="h-2.5 w-2.5" />
-            ) : (
-              <TrendingDown className="h-2.5 w-2.5" />
-            )}
-            <span>{Math.abs(change).toFixed(1)}%</span>
-          </div>
-          <span className="text-[10px] text-[var(--color-text-muted)]">vs last period</span>
+            {isPositive ? "+" : ""}
+            {trend}%
+          </span>
+          <span className="text-[12px] text-[var(--color-text-tertiary)] ml-1">vs last period</span>
         </div>
       )}
     </motion.div>

@@ -1,55 +1,45 @@
 @import "tailwindcss";
 
 /* ============================================================
-   SHADOWSIG DESIGN SYSTEM — v2
-   Refined dark theme inspired by Linear, Vercel, and premium
-   crypto dashboards. No neon. No glow. Just clarity.
+   SHADOWSIG DESIGN SYSTEM — macOS Light Theme
+   Professional, secure, pristine interface.
    ============================================================ */
 
 @theme {
-  /* ---- Backgrounds: True neutral darks ---- */
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #111111;
-  --color-bg-tertiary: #191919;
-  --color-bg-elevated: #1a1a1a;
-  --color-bg-card: #141414;
-  --color-bg-glass: rgba(17, 17, 17, 0.8);
+  /* ---- Backgrounds ---- */
+  --color-bg-primary: #f5f5f7;       /* macOS window background */
+  --color-bg-secondary: #ffffff;     /* Cards, elevated elements */
+  --color-bg-tertiary: #e5e5ea;      /* Hover states, subtle blocks */
+  --color-bg-sidebar: rgba(245, 245, 247, 0.75); /* Translucent sidebar */
+  --color-bg-card: #ffffff;
 
-  /* ---- Borders: Subtle, not glowing ---- */
-  --color-border-primary: rgba(255, 255, 255, 0.06);
-  --color-border-secondary: rgba(255, 255, 255, 0.1);
-  --color-border-active: rgba(99, 102, 241, 0.5);
+  /* ---- Borders ---- */
+  --color-border-primary: rgba(0, 0, 0, 0.08);
+  --color-border-secondary: rgba(0, 0, 0, 0.15);
 
-  /* ---- Text: High contrast hierarchy ---- */
-  --color-text-primary: #ededef;
-  --color-text-secondary: #8b8b8e;
-  --color-text-tertiary: #5c5c5f;
-  --color-text-muted: #3e3e41;
+  /* ---- Text: Crisp hierarchy ---- */
+  --color-text-primary: #1d1d1f;     /* Apple dark text */
+  --color-text-secondary: #86868b;
+  --color-text-tertiary: #a1a1a6;
+  --color-text-muted: #d2d2d7;
 
-  /* ---- Accent: Indigo (single accent) ---- */
-  --color-accent: #6366f1;
-  --color-accent-hover: #818cf8;
-  --color-accent-muted: rgba(99, 102, 241, 0.12);
-  --color-accent-subtle: rgba(99, 102, 241, 0.06);
+  /* ---- Accent: macOS System Blue ---- */
+  --color-accent: #007aff;
+  --color-accent-hover: #0056b3;
+  --color-accent-subtle: rgba(0, 122, 255, 0.1);
 
-  /* ---- Semantic: Success ---- */
-  --color-emerald-400: #34d399;
-  --color-emerald-500: #10b981;
-  --color-emerald-600: #059669;
+  /* ---- Semantic Colors (macOS System Colors) ---- */
+  --color-system-green: #34c759;
+  --color-system-red: #ff3b30;
+  --color-system-orange: #ff9500;
 
-  /* ---- Semantic: Warning ---- */
-  --color-amber-400: #fbbf24;
-  --color-amber-500: #f59e0b;
+  /* ---- Shadows: Soft, realistic drop shadows ---- */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-elevated: 0 8px 30px rgba(0,0,0,0.12);
 
-  /* ---- Semantic: Error ---- */
-  --color-red-400: #f87171;
-  --color-red-500: #ef4444;
-  --color-red-600: #dc2626;
-
-  /* ---- Shadows: Subtle depth, no glow ---- */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.03);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.06);
-  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.6);
+  /* ---- Typography ---- */
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
   /* ---- Spacing ---- */
   --radius-sm: 6px;
@@ -78,92 +68,9 @@ html {
 body {
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-system);
   line-height: 1.5;
   overflow-x: hidden;
-}
-
-/* ============================================================
-   CARDS — Clean, flat, no glass
-   ============================================================ */
-
-.glass {
-  background: var(--color-bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-lg);
-}
-
-.glass-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.glass-card:hover {
-  border-color: var(--color-border-secondary);
-  box-shadow: var(--shadow-card-hover);
-}
-
-/* ============================================================
-   GRADIENT TEXT — Refined, not neon
-   ============================================================ */
-
-.gradient-text {
-  background: linear-gradient(135deg, #818cf8, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* ============================================================
-   ANIMATIONS — Subtle, purposeful
-   ============================================================ */
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
 }
 
 /* ============================================================
@@ -171,23 +78,87 @@ body {
    ============================================================ */
 
 .font-mono {
-  font-family: var(--font-mono, "JetBrains Mono"), "Fira Code", ui-monospace, monospace;
+  font-family: var(--font-mono);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   color: var(--color-text-primary);
 }
 
 /* ============================================================
-   SELECTION
+   SCROLLBAR
    ============================================================ */
 
-::selection {
-  background: rgba(99, 102, 241, 0.25);
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-full); /* Apple pill buttons */
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-secondary);
   color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-border-secondary);
+  background: var(--color-bg-primary);
 }
 
 /* ============================================================
@@ -205,139 +176,4 @@ h1, h2, h3, h4, h5, h6 {
   .main-content-layout.sidebar-collapsed {
     padding-left: 64px;
   }
-}
-
-/* ============================================================
-   HERO BACKGROUND — Subtle, not overwhelming
-   ============================================================ */
-
-.hero-gradient-mesh {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.hero-gradient-mesh::before {
-  content: "";
-  position: absolute;
-  width: 130%;
-  height: 130%;
-  top: -15%;
-  left: -15%;
-  background:
-    radial-gradient(ellipse 500px 350px at 25% 35%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 400px 300px at 70% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 70%),
-    radial-gradient(ellipse 350px 250px at 50% 75%, rgba(99, 102, 241, 0.04) 0%, transparent 70%);
-  animation: mesh-drift 25s ease-in-out infinite;
-}
-
-@keyframes mesh-drift {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(2%, -1.5%); }
-}
-
-/* ============================================================
-   GRID PATTERN — Very subtle
-   ============================================================ */
-
-.grid-pattern {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
-/* ============================================================
-   BUTTONS
-   ============================================================ */
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
-  text-decoration: none;
-}
-
-.btn-primary:hover {
-  background: var(--color-accent-hover);
-}
-
-.btn-primary:active {
-  transform: scale(0.98);
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-secondary);
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-  text-decoration: none;
-}
-
-.btn-secondary:hover {
-  color: var(--color-text-primary);
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-/* ============================================================
-   NETWORK STATUS — Minimal
-   ============================================================ */
-
-.network-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: var(--radius-full);
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.12);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #34d399;
-  letter-spacing: 0.02em;
-}
-
-.network-status .dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #34d399;
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
-
-/* ============================================================
-   VERIFICATION PULSE — Minimal
-   ============================================================ */
-
-.verification-pulse {
-  position: relative;
-}
-
-.verification-pulse::after {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  border-radius: inherit;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  opacity: 0;
-  animation: pulse-glow 2.5s ease-in-out infinite;
 }
