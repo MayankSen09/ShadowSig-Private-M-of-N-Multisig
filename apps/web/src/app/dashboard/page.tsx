@@ -9,7 +9,6 @@ import { ThresholdRing } from "@/components/ui/threshold-ring";
 import { ActivityFeed } from "@/components/ui/activity-feed";
 import { TreasuryPanel } from "@/components/ui/treasury-panel";
 import { ProofLatencyChart } from "@/components/ui/proof-latency-chart";
-import { VerificationPulse } from "@/components/ui/verification-pulse";
 import {
   Layers, FileText, Shield, Clock, Wallet, Zap, Cpu, Hash,
 } from "lucide-react";
@@ -39,7 +38,28 @@ export default function DashboardPage() {
             Privacy-preserving multisig operations overview
           </motion.p>
         </div>
-        <VerificationPulse isVerified={true} label="System Healthy" />
+        <div className="flex items-center gap-3">
+          {/* On-chain verifier status */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-500/5 border border-purple-500/15 text-[10px] font-semibold text-purple-300 uppercase tracking-wider"
+          >
+            <Shield className="h-3 w-3" />
+            <span>Verifier: Active</span>
+          </motion.div>
+          {/* Network status */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.25 }}
+            className="network-status"
+          >
+            <span className="dot" />
+            <span>LEZ Mainnet</span>
+          </motion.div>
+        </div>
       </div>
 
       {/* Metrics Row */}
