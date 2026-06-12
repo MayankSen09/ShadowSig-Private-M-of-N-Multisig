@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+
 
 interface ThresholdRingProps {
   current: number;
@@ -23,22 +23,12 @@ export function ThresholdRing({
   label,
   animated = true,
 }: ThresholdRingProps) {
-  const [progress, setProgress] = useState(0);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const percentage = Math.min(current / threshold, 1);
   const isComplete = current >= threshold;
 
-  useEffect(() => {
-    if (animated) {
-      const timer = setTimeout(() => setProgress(percentage), 100);
-      return () => clearTimeout(timer);
-    } else {
-      setProgress(percentage);
-    }
-  }, [percentage, animated]);
-
-  const strokeDashoffset = circumference * (1 - progress);
+  const strokeDashoffset = circumference * (1 - percentage);
   const showText = size >= 60;
 
   return (
