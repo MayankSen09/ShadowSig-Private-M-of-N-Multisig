@@ -2,14 +2,14 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use std::sync::Arc;
+use std::time::Instant;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use std::sync::Arc;
-use std::time::Instant;
 
-mod routes;
 mod config;
+mod routes;
 
 pub struct AppState {
     pub start_time: Instant,
@@ -20,8 +20,10 @@ pub struct AppState {
 async fn main() -> anyhow::Result<()> {
     // Initialize tracing
     tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| "shadowsig=debug,tower_http=debug".into()))
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "shadowsig=debug,tower_http=debug".into()),
+        )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
@@ -30,7 +32,10 @@ async fn main() -> anyhow::Result<()> {
     let config = config::Config::from_env();
 
     // Connect to database
-    tracing::info!("Connecting to PostgreSQL database at {}...", config.database_url);
+    tracing::info!(
+        "Connecting to PostgreSQL database at {}...",
+        config.database_url
+    );
     let db_pool = sqlx::PgPool::connect(&config.database_url)
         .await
         .map_err(|e| anyhow::anyhow!("Failed to connect to database: {}", e))?;

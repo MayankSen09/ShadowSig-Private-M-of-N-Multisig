@@ -1,4 +1,4 @@
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 
 /// Compute SHA-256 hash of input bytes
 pub fn sha256(data: &[u8]) -> Vec<u8> {
@@ -21,12 +21,7 @@ pub fn compute_commitment(secret: &[u8]) -> Vec<u8> {
 }
 
 /// Verify a Merkle membership proof
-pub fn verify_merkle_proof(
-    leaf: &[u8],
-    proof: &[Vec<u8>],
-    root: &[u8],
-    index: u32,
-) -> bool {
+pub fn verify_merkle_proof(leaf: &[u8], proof: &[Vec<u8>], root: &[u8], index: u32) -> bool {
     let mut current = sha256(leaf);
     let mut idx = index;
 

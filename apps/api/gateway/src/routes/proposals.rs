@@ -1,11 +1,16 @@
-use axum::{extract::{Path, State}, Json};
-use shadowsig_shared::models::*;
-use uuid::Uuid;
-use std::sync::Arc;
 use crate::AppState;
+use axum::{
+    extract::{Path, State},
+    Json,
+};
 use chrono::Utc;
+use shadowsig_shared::models::*;
+use std::sync::Arc;
+use uuid::Uuid;
 
-pub async fn list_proposals(State(state): State<Arc<AppState>>) -> Json<ApiResponse<Vec<Proposal>>> {
+pub async fn list_proposals(
+    State(state): State<Arc<AppState>>,
+) -> Json<ApiResponse<Vec<Proposal>>> {
     match sqlx::query_as::<_, Proposal>("SELECT * FROM proposals ORDER BY created_at DESC")
         .fetch_all(&state.db_pool)
         .await
@@ -33,7 +38,10 @@ pub async fn create_proposal(
     {
         Ok(Some(m)) => m,
         Ok(None) => {
-            tracing::warn!("Failed to create proposal: multisig {} not found", req.multisig_id);
+            tracing::warn!(
+                "Failed to create proposal: multisig {} not found",
+                req.multisig_id
+            );
             return Json(ApiResponse::err("MultisigNotFound"));
         }
         Err(e) => {

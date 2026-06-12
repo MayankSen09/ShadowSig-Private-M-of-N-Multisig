@@ -1,9 +1,12 @@
-use axum::{extract::{Path, State}, Json};
-use shadowsig_shared::models::*;
-use uuid::Uuid;
-use std::sync::Arc;
 use crate::AppState;
+use axum::{
+    extract::{Path, State},
+    Json,
+};
 use chrono::Utc;
+use shadowsig_shared::models::*;
+use std::sync::Arc;
+use uuid::Uuid;
 
 fn build_merkle_root(commitments: &[Vec<u8>]) -> Vec<u8> {
     if commitments.is_empty() {
@@ -11,7 +14,10 @@ fn build_merkle_root(commitments: &[Vec<u8>]) -> Vec<u8> {
     }
 
     // Hash each commitment to get leaves
-    let mut leaves: Vec<Vec<u8>> = commitments.iter().map(|c| shadowsig_shared::crypto::sha256(c)).collect();
+    let mut leaves: Vec<Vec<u8>> = commitments
+        .iter()
+        .map(|c| shadowsig_shared::crypto::sha256(c))
+        .collect();
 
     // Pad to power of 2
     while leaves.len().count_ones() != 1 {
@@ -33,7 +39,9 @@ fn build_merkle_root(commitments: &[Vec<u8>]) -> Vec<u8> {
     current.into_iter().next().unwrap_or_else(|| vec![0u8; 32])
 }
 
-pub async fn list_multisigs(State(state): State<Arc<AppState>>) -> Json<ApiResponse<Vec<Multisig>>> {
+pub async fn list_multisigs(
+    State(state): State<Arc<AppState>>,
+) -> Json<ApiResponse<Vec<Multisig>>> {
     match sqlx::query_as::<_, Multisig>("SELECT * FROM multisigs ORDER BY created_at DESC")
         .fetch_all(&state.db_pool)
         .await
@@ -53,9 +61,13 @@ pub async fn create_multisig(
     State(state): State<Arc<AppState>>,
     Json(req): Json<CreateMultisigRequest>,
 ) -> Json<ApiResponse<Multisig>> {
-    let commitments: Vec<Vec<u8>> = req.member_commitments
+    let commitments: Vec<Vec<u8>> = req
+        .member_commitments
         .iter()
-        .map(|h| hex::decode(h).unwrap_or_else(|_| shadowsig_shared::crypto::compute_commitment(h.as_bytes())))
+        .map(|h| {
+            hex::decode(h)
+                .unwrap_or_else(|_| shadowsig_shared::crypto::compute_commitment(h.as_bytes()))
+        })
         .collect();
 
     let merkle_root = build_merkle_root(&commitments);

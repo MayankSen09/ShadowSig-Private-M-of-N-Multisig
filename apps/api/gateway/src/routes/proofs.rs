@@ -1,8 +1,11 @@
-use axum::{extract::{Path, State}, Json};
-use shadowsig_shared::models::*;
-use uuid::Uuid;
-use std::sync::Arc;
 use crate::AppState;
+use axum::{
+    extract::{Path, State},
+    Json,
+};
+use shadowsig_shared::models::*;
+use std::sync::Arc;
+use uuid::Uuid;
 
 pub async fn generate_proof(
     State(_state): State<Arc<AppState>>,
@@ -15,7 +18,11 @@ pub async fn generate_proof(
     // 3. Return job ID for polling
 
     let proof_id = Uuid::new_v4();
-    tracing::info!("Proof generation queued: {} for proposal: {}", proof_id, req.proposal_id);
+    tracing::info!(
+        "Proof generation queued: {} for proposal: {}",
+        proof_id,
+        req.proposal_id
+    );
 
     Json(ApiResponse::ok(serde_json::json!({
         "proof_id": proof_id,

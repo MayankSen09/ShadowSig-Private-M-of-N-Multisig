@@ -1,7 +1,7 @@
+use crate::AppState;
 use axum::{extract::State, Json};
 use shadowsig_shared::models::*;
 use std::sync::Arc;
-use crate::AppState;
 
 pub async fn get_metrics(State(state): State<Arc<AppState>>) -> Json<ApiResponse<MetricsResponse>> {
     let total_multisigs: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM multisigs")
@@ -9,10 +9,12 @@ pub async fn get_metrics(State(state): State<Arc<AppState>>) -> Json<ApiResponse
         .await
         .unwrap_or(0);
 
-    let active_proposals: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM proposals WHERE status IN ('pending', 'approved')")
-        .fetch_one(&state.db_pool)
-        .await
-        .unwrap_or(0);
+    let active_proposals: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM proposals WHERE status IN ('pending', 'approved')",
+    )
+    .fetch_one(&state.db_pool)
+    .await
+    .unwrap_or(0);
 
     let proofs_generated: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM approvals")
         .fetch_one(&state.db_pool)

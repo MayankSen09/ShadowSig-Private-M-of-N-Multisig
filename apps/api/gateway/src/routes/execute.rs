@@ -1,9 +1,9 @@
+use crate::AppState;
 use axum::{extract::State, Json};
+use chrono::Utc;
 use shadowsig_shared::models::*;
 use std::sync::Arc;
-use crate::AppState;
 use uuid::Uuid;
-use chrono::Utc;
 
 pub async fn execute_action(
     State(state): State<Arc<AppState>>,
@@ -14,31 +14,33 @@ pub async fn execute_action(
         Err(e) => return Json(ApiResponse::err(e.to_string())),
     };
 
-    let proposal: Option<Proposal> = match sqlx::query_as::<_, Proposal>(
-        "SELECT * FROM proposals WHERE id = $1 FOR UPDATE"
-    )
-    .bind(req.proposal_id)
-    .fetch_optional(&mut *tx)
-    .await {
-        Ok(p) => p,
-        Err(e) => return Json(ApiResponse::err(e.to_string())),
-    };
+    let proposal: Option<Proposal> =
+        match sqlx::query_as::<_, Proposal>("SELECT * FROM proposals WHERE id = $1 FOR UPDATE")
+            .bind(req.proposal_id)
+            .fetch_optional(&mut *tx)
+            .await
+        {
+            Ok(p) => p,
+            Err(e) => return Json(ApiResponse::err(e.to_string())),
+        };
 
     let proposal = match proposal {
         None => return Json(ApiResponse::err("ProposalNotFound")),
         Some(p) if p.status == "executed" => return Json(ApiResponse::err("ProposalExecuted")),
-        Some(p) if p.approval_count < p.threshold => return Json(ApiResponse::err("ThresholdNotReached")),
+        Some(p) if p.approval_count < p.threshold => {
+            return Json(ApiResponse::err("ThresholdNotReached"))
+        }
         Some(p) => p,
     };
 
     // Update proposal status
-    if let Err(e) = sqlx::query(
-        "UPDATE proposals SET status = 'executed', updated_at = $1 WHERE id = $2"
-    )
-    .bind(Utc::now())
-    .bind(req.proposal_id)
-    .execute(&mut *tx)
-    .await {
+    if let Err(e) =
+        sqlx::query("UPDATE proposals SET status = 'executed', updated_at = $1 WHERE id = $2")
+            .bind(Utc::now())
+            .bind(req.proposal_id)
+            .execute(&mut *tx)
+            .await
+    {
         return Json(ApiResponse::err(e.to_string()));
     }
 
@@ -75,7 +77,11 @@ pub async fn execute_action(
     tracing::info!(
         "🚀 Proposal {} executed — tx: {}",
         req.proposal_id,
-        execution.tx_hash.as_ref().map(|h| hex::encode(&h[..8])).unwrap_or_default(),
+        execution
+            .tx_hash
+            .as_ref()
+            .map(|h| hex::encode(&h[..8]))
+            .unwrap_or_default(),
     );
 
     Json(ApiResponse::ok(execution))

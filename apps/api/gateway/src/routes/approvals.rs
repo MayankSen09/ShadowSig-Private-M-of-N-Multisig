@@ -1,9 +1,9 @@
+use crate::AppState;
 use axum::{extract::State, Json};
+use chrono::Utc;
 use shadowsig_shared::models::*;
 use std::sync::Arc;
-use crate::AppState;
 use uuid::Uuid;
-use chrono::Utc;
 
 pub async fn submit_approval(
     State(state): State<Arc<AppState>>,
@@ -14,7 +14,9 @@ pub async fn submit_approval(
 
     if nullifier_bytes.len() != 32 {
         tracing::warn!("Invalid nullifier length: {} bytes", nullifier_bytes.len());
-        return Json(ApiResponse::err("InvalidWitness: nullifier must be 32 bytes"));
+        return Json(ApiResponse::err(
+            "InvalidWitness: nullifier must be 32 bytes",
+        ));
     }
 
     // Begin database transaction
@@ -25,11 +27,12 @@ pub async fn submit_approval(
 
     // Check if nullifier has already been used
     let nullifier_exists: bool = match sqlx::query_scalar::<_, bool>(
-        "SELECT EXISTS(SELECT 1 FROM nullifiers WHERE nullifier_hash = $1)"
+        "SELECT EXISTS(SELECT 1 FROM nullifiers WHERE nullifier_hash = $1)",
     )
     .bind(&nullifier_bytes)
     .fetch_one(&mut *tx)
-    .await {
+    .await
+    {
         Ok(exists) => exists,
         Err(e) => return Json(ApiResponse::err(e.to_string())),
     };
@@ -39,15 +42,15 @@ pub async fn submit_approval(
     }
 
     // Retrieve and lock proposal for update
-    let proposal: Option<Proposal> = match sqlx::query_as::<_, Proposal>(
-        "SELECT * FROM proposals WHERE id = $1 FOR UPDATE"
-    )
-    .bind(req.proposal_id)
-    .fetch_optional(&mut *tx)
-    .await {
-        Ok(p) => p,
-        Err(e) => return Json(ApiResponse::err(e.to_string())),
-    };
+    let proposal: Option<Proposal> =
+        match sqlx::query_as::<_, Proposal>("SELECT * FROM proposals WHERE id = $1 FOR UPDATE")
+            .bind(req.proposal_id)
+            .fetch_optional(&mut *tx)
+            .await
+        {
+            Ok(p) => p,
+            Err(e) => return Json(ApiResponse::err(e.to_string())),
+        };
 
     let proposal = match proposal {
         None => return Json(ApiResponse::err("ProposalNotFound")),
@@ -101,14 +104,15 @@ pub async fn submit_approval(
     };
 
     if let Err(e) = sqlx::query(
-        "UPDATE proposals SET approval_count = $1, status = $2, updated_at = $3 WHERE id = $4"
+        "UPDATE proposals SET approval_count = $1, status = $2, updated_at = $3 WHERE id = $4",
     )
     .bind(new_approval_count)
     .bind(new_status)
     .bind(Utc::now())
     .bind(req.proposal_id)
     .execute(&mut *tx)
-    .await {
+    .await
+    {
         return Json(ApiResponse::err(e.to_string()));
     }
 
