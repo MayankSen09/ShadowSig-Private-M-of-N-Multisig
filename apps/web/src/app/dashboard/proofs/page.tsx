@@ -11,9 +11,6 @@ import { Shield, Clock, Cpu, Database } from "lucide-react";
 export default function ProofsPage() {
   const { proofs, metrics } = useDashboardStore();
 
-  const verified = proofs.filter((p) => p.status === "verified").length;
-  const generating = proofs.filter((p) => p.status === "generating").length;
-
   return (
     <div className="space-y-6">
       <div>

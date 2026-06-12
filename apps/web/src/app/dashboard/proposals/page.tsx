@@ -106,7 +106,7 @@ export default function ProposalsPage() {
         onClose={() => setApprovalTarget(null)}
         proposalId={approvalTarget?.id ?? ""}
         proposalTitle={approvalTarget?.title ?? ""}
-        onApproved={(nullifier) => {
+        onApproved={() => {
           if (approvalTarget) {
             updateProposalApproval(approvalTarget.id);
           }

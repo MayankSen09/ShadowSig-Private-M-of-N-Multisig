@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Settings as SettingsIcon, Shield, Bell, Key } from "lucide-react";
+import { Shield, Bell, Key } from "lucide-react";
 import { useState } from "react";
 
 type SettingItem = {

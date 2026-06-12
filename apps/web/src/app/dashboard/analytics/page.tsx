@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { mockProofLatency } from "@/lib/mock-data";
-import { useDashboardStore } from "@/lib/store";
 import { MetricCard } from "@/components/ui/metric-card";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -23,12 +22,23 @@ const weeklyActivity = Array.from({ length: 7 }, (_, i) => ({
   proposals: Math.floor(5 + Math.random() * 15),
 }));
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: string | number;
+    color?: string;
+    fill?: string;
+  }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-zinc-950/90 backdrop-blur-md border border-white/10 px-3 py-2 rounded-lg shadow-xl text-[10px] font-mono">
         <p className="text-zinc-500 mb-1">{label}</p>
-        {payload.map((p: any) => (
+        {payload.map((p) => (
           <p key={p.name} style={{ color: p.color || p.fill }} className="font-bold">
             {p.name.toUpperCase()}: {p.value}
           </p>
@@ -40,7 +50,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function AnalyticsPage() {
-  const { metrics } = useDashboardStore();
 
   return (
     <div className="space-y-6">
