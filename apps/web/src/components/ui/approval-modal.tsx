@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Shield, Loader2, Check, AlertTriangle, Cpu, Hash, Lock, Zap, type LucideIcon } from "lucide-react";
 
