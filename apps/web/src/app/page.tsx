@@ -1,18 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   Shield, Zap, Lock, Eye, Globe, Cpu, RotateCcw, RefreshCw,
   AlertTriangle, Wallet, ArrowRight, GitBranch, Layers,
   ChevronRight,
 } from "lucide-react";
-
-const HeroVisualization = dynamic(
-  () => import("@/components/landing/hero-visualization").then((m) => m.HeroVisualization),
-  { ssr: false }
-);
 
 const features = [
   { icon: Shield, title: "Anonymous Approvals", desc: "Submit votes without revealing signer identity. Shielded accounts protect all participant data." },
@@ -53,9 +47,6 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-14">
         <div className="hero-gradient-mesh" />
-        <div className="absolute inset-0 grid-pattern opacity-30" />
-        <HeroVisualization />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--color-bg-primary)_75%)]" />
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -66,8 +57,7 @@ export default function LandingPage() {
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight leading-[1.1] mb-5">
-            Private Multisig for{" "}
-            <span className="gradient-text">the Logos Execution Zone</span>
+            Private Multisig for the Logos Execution Zone
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }} className="text-base md:text-lg text-[var(--color-text-secondary)] max-w-xl mx-auto mb-8 leading-relaxed">
