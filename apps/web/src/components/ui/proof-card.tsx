@@ -47,7 +47,6 @@ const statusConfig = {
 
 export function ProofCard({ proof, className }: ProofCardProps) {
   const config = statusConfig[proof.status] || statusConfig.failed;
-  const StatusIcon = config.icon;
 
   return (
     <motion.div

@@ -44,7 +44,6 @@ export function NullifierStatusBadge({
   showLabel = true,
 }: NullifierStatusBadgeProps) {
   const c = config[status] || config.unused;
-  const Icon = c.icon;
 
   return (
     <div

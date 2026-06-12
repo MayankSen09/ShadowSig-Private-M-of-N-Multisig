@@ -22,7 +22,6 @@ export function MetricCard({
   change,
   icon: Icon,
   iconColor = "text-cyan-400",
-  iconBg, // deprecated but kept in signature
   className,
   suffix,
   delay = 0,
