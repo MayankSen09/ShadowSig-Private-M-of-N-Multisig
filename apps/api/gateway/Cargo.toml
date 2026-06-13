@@ -21,8 +21,10 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 thiserror.workspace = true
 anyhow.workspace = true
+reqwest.workspace = true
 dotenvy.workspace = true
 
 hex.workspace = true
 
 shadowsig-shared = { path = "../shared" }
+shadowsig-host = { path = "../../../risc0/host" }

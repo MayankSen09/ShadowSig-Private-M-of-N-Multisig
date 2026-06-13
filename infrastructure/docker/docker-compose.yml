@@ -15,7 +15,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../../apps/api/migrations:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U shadowsig"]
       interval: 5s
@@ -54,6 +53,19 @@ services:
     command: ["--js", "--sd", "/data"]
     volumes:
       - nats_data:/data
+    networks:
+      - shadowsig
+
+  # ============================================================
+  # LEZ Blockchain Mock Node (On-Chain)
+  # ============================================================
+  lez-node:
+    build:
+      context: ../../programs/shadowsig-verifier
+      dockerfile: Dockerfile
+    container_name: shadowsig-lez-node
+    ports:
+      - "9090:9090"
     networks:
       - shadowsig
 
