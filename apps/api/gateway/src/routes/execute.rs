@@ -84,5 +84,19 @@ pub async fn execute_action(
             .unwrap_or_default(),
     );
 
+    // Relay to LEZ Node (On-Chain)
+    let payload = serde_json::json!({
+        "proposal_id": hex::encode(req.proposal_id.as_bytes())
+    });
+
+    match state.http_client.post(&format!("{}/lez/execute", state.lez_rpc_url))
+        .json(&payload)
+        .send()
+        .await {
+        Ok(res) if res.status().is_success() => tracing::info!("✅ Successfully relayed Execution to LEZ Blockchain"),
+        Ok(res) => tracing::error!("❌ LEZ Node rejected execution: {:?}", res.text().await),
+        Err(e) => tracing::error!("❌ Failed to reach LEZ Node: {}", e),
+    }
+
     Json(ApiResponse::ok(execution))
 }
