@@ -128,11 +128,12 @@ pub struct SubmitApprovalRequest {
     pub proof: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct GenerateProofRequest {
     pub proposal_id: Uuid,
     pub commitment: String,
     pub merkle_path: Vec<String>,
+    pub identity_secret: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
