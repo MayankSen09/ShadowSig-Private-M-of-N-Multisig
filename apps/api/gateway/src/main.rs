@@ -14,6 +14,8 @@ mod routes;
 pub struct AppState {
     pub start_time: Instant,
     pub db_pool: sqlx::PgPool,
+    pub http_client: reqwest::Client,
+    pub lez_rpc_url: String,
 }
 
 #[tokio::main]
@@ -50,6 +52,8 @@ async fn main() -> anyhow::Result<()> {
     let state = Arc::new(AppState {
         start_time: Instant::now(),
         db_pool,
+        http_client: reqwest::Client::new(),
+        lez_rpc_url: config.lez_rpc_url,
     });
 
     // CORS configuration
@@ -66,6 +70,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/multisigs", get(routes::multisigs::list_multisigs))
         .route("/api/multisigs", post(routes::multisigs::create_multisig))
         .route("/api/multisigs/{id}", get(routes::multisigs::get_multisig))
+        .route("/api/multisigs/{id}/members", get(routes::multisigs::get_members))
         // Proposals
         .route("/api/proposals", get(routes::proposals::list_proposals))
         .route("/api/proposals", post(routes::proposals::create_proposal))
