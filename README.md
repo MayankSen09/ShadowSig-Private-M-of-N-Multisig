@@ -86,6 +86,33 @@ graph TD
 
 ## Quick Start
 
+### LP-0002 Prize: On-Chain Deployment
+
+ShadowSig is architected for the Logos Execution Zone (LEZ) using the SPEL framework (`#[lez_program]`).
+
+#### Deployment to LEZ Testnet
+1. **Install LEZ CLI**: Clone the `logos-blockchain/logos-execution-zone` repo and build the `lez-cli`.
+2. **Compile Program**:
+   ```bash
+   cd programs/shadowsig-verifier
+   cargo build-lez
+   ```
+3. **Deploy**:
+   ```bash
+   lez program deploy target/deploy/shadowsig_verifier.so
+   ```
+
+#### E2E Demo Requirements
+As per the LP-0002 prize criteria:
+- **RISC0_DEV_MODE=0**: All proofs are generated securely by the client using RISC0 zkVM.
+- **Nullifier Protection**: Shielded members cannot double-vote on the same proposal.
+- **Shielded Approvals**: On-chain observers only see that an approval occurred and that the threshold was reached, never member identities.
+
+Run the end-to-end integration demo against the LEZ local sequencer:
+```bash
+bash scripts/demo.sh
+```
+
 ### Prerequisites
 
 - Node.js 20+
