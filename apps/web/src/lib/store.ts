@@ -1,79 +1,55 @@
 import { create } from "zustand";
-import type {
-  Multisig,
-  Proposal,
-  ZkProof,
-  DashboardMetrics,
-  ActivityEvent,
-  TreasuryAsset,
-} from "./types";
-import {
-  mockMetrics,
-  mockMultisigs,
-  mockProposals,
-  mockProofs,
-  mockActivity,
-  mockTreasuryAssets,
-} from "./mock-data";
+import type { ActivityEvent } from "./types";
 
 // ============================================================
 // DASHBOARD STORE
 // ============================================================
 
 interface DashboardState {
-  metrics: DashboardMetrics;
-  multisigs: Multisig[];
-  proposals: Proposal[];
-  proofs: ZkProof[];
-  activity: ActivityEvent[];
-  treasuryAssets: TreasuryAsset[];
+  // Pure UI state and transient activity
+  activityEvents: ActivityEvent[];
   sidebarOpen: boolean;
   selectedMultisigId: string | null;
+  isAuthenticated: boolean;
+  identityCommitment: string | null;
+  identityPrivateKey: string | null;
+  identityPublicKey: string | null;
 
   // Actions
+  login: (commitment: string, privateKey: string, publicKey: string) => void;
+  logout: () => void;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
   selectMultisig: (id: string | null) => void;
   addActivity: (event: ActivityEvent) => void;
-  updateProposalApproval: (proposalId: string) => void;
-  updateProofStatus: (proofId: string, status: ZkProof["status"]) => void;
 }
 
 export const useDashboardStore = create<DashboardState>((set) => ({
-  metrics: mockMetrics,
-  multisigs: mockMultisigs,
-  proposals: mockProposals,
-  proofs: mockProofs,
-  activity: mockActivity,
-  treasuryAssets: mockTreasuryAssets,
+  activityEvents: [],
   sidebarOpen: true,
   selectedMultisigId: null,
+  isAuthenticated: false,
+  identityCommitment: null,
+  identityPrivateKey: null,
+  identityPublicKey: null,
+
+  login: (commitment, privateKey, publicKey) => set({ 
+    isAuthenticated: true,
+    identityCommitment: commitment,
+    identityPrivateKey: privateKey,
+    identityPublicKey: publicKey
+  }),
+  logout: () => set({ 
+    isAuthenticated: false,
+    identityCommitment: null,
+    identityPrivateKey: null,
+    identityPublicKey: null
+  }),
 
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
   selectMultisig: (id) => set({ selectedMultisigId: id }),
 
   addActivity: (event) =>
-    set((s) => ({ activity: [event, ...s.activity].slice(0, 50) })),
-
-  updateProposalApproval: (proposalId) =>
-    set((s) => ({
-      proposals: s.proposals.map((p) =>
-        p.id === proposalId
-          ? {
-              ...p,
-              approvalCount: p.approvalCount + 1,
-              status:
-                p.approvalCount + 1 >= p.threshold ? "approved" : p.status,
-            }
-          : p
-      ),
-    })),
-
-  updateProofStatus: (proofId, status) =>
-    set((s) => ({
-      proofs: s.proofs.map((p) =>
-        p.id === proofId ? { ...p, status } : p
-      ),
-    })),
+    set((s) => ({ activityEvents: [event, ...s.activityEvents].slice(0, 50) })),
 }));
