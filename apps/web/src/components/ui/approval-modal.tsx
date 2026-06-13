@@ -127,7 +127,7 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
       // Step 6: Verify
       updateStep("verify", { status: "running" });
       await delay(500);
-      updateStep("verify", { status: "done", detail: "✓ Receipt valid" });
+      updateStep("verify", { status: "done", detail: "Receipt valid" });
 
       setElapsedMs(Math.round(performance.now() - start));
       setPhase("done");
@@ -144,7 +144,7 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
           }),
         });
       } catch {
-        // API not available — local-only mode
+        // API not available
       }
 
       onApproved?.(nHex);
@@ -166,7 +166,7 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
         onClick={handleClose}
       >
         <motion.div
@@ -174,37 +174,37 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-md mx-4 bg-zinc-900/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md mx-4 bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] rounded-2xl shadow-[var(--shadow-elevated)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-5 border-b border-white/5">
+          <div className="flex items-center justify-between p-5 border-b border-[var(--color-border-primary)] bg-[var(--color-bg-primary)]">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-400/10">
-                <Shield className="h-5 w-5 text-emerald-400" />
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-system-green)] flex items-center justify-center shadow-sm">
+                <Shield className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-white">Anonymous Approval</h2>
-                <p className="text-[11px] text-zinc-400 truncate max-w-[200px]">{proposalTitle}</p>
+                <h2 className="text-[15px] font-semibold text-[var(--color-text-primary)] tracking-tight">Anonymous Approval</h2>
+                <p className="text-[12px] text-[var(--color-text-secondary)] truncate max-w-[200px]">{proposalTitle}</p>
               </div>
             </div>
-            <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
+            <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="p-5">
+          <div className="p-6 bg-[var(--color-bg-secondary)]">
             {/* Input Phase */}
             {phase === "input" && (
               <div className="space-y-4">
-                <div className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/10">
-                  <p className="text-xs text-cyan-300/80">
+                <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-100">
+                  <p className="text-[12px] text-blue-800 font-medium leading-relaxed">
                     Enter your member secret key to generate an anonymous zero-knowledge proof. Your identity will never be revealed.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                  <label className="block text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
                     Member Secret Key
                   </label>
                   <input
@@ -212,23 +212,23 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
                     value={secretHex}
                     onChange={(e) => setSecretHex(e.target.value)}
                     placeholder="Paste your hex-encoded secret..."
-                    className="w-full px-4 py-3 text-sm font-mono rounded-lg bg-zinc-800/50 border border-white/5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                    className="w-full px-3 py-2.5 text-[13px] font-mono rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent-subtle)] transition-all shadow-sm"
                   />
                 </div>
 
                 {errorMsg && (
-                  <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-2">
-                    <AlertTriangle className="h-3 w-3 text-red-400 shrink-0" />
-                    <p className="text-xs text-red-300">{errorMsg}</p>
+                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-[var(--color-system-red)] shrink-0" />
+                    <p className="text-[12px] text-red-800 font-medium">{errorMsg}</p>
                   </div>
                 )}
 
                 <button
                   onClick={runProofGeneration}
                   disabled={!secretHex.trim()}
-                  className="w-full py-3 text-sm font-semibold rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg hover:shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed mt-2"
                 >
-                  <Zap className="inline h-4 w-4 mr-2" />
+                  <Zap className="h-4 w-4" />
                   Generate ZK Proof & Approve
                 </button>
               </div>
@@ -240,41 +240,41 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
                 {steps.map((step, i) => (
                   <motion.div
                     key={step.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className={`flex items-start gap-3 p-3 rounded-lg transition-all duration-300 ${
+                    className={`flex items-start gap-3 p-3 rounded-xl transition-all duration-300 border shadow-sm ${
                       step.status === "running"
-                        ? "bg-cyan-500/5 border border-cyan-500/20"
+                        ? "bg-blue-50 border-blue-200"
                         : step.status === "done"
-                        ? "bg-emerald-500/5 border border-emerald-500/10"
+                        ? "bg-[var(--color-bg-secondary)] border-[var(--color-border-primary)]"
                         : step.status === "error"
-                        ? "bg-red-500/5 border border-red-500/20"
-                        : "bg-zinc-800/20 border border-transparent"
+                        ? "bg-red-50 border-red-200"
+                        : "bg-[var(--color-bg-primary)] border-transparent shadow-none"
                     }`}
                   >
                     <div className="shrink-0 mt-0.5">
                       {step.status === "running" ? (
-                        <Loader2 className="h-4 w-4 text-cyan-400 animate-spin" />
+                        <Loader2 className="h-4 w-4 text-[var(--color-accent)] animate-spin" />
                       ) : step.status === "done" ? (
-                        <Check className="h-4 w-4 text-emerald-400" />
+                        <Check className="h-4 w-4 text-[var(--color-system-green)]" />
                       ) : step.status === "error" ? (
-                        <AlertTriangle className="h-4 w-4 text-red-400" />
+                        <AlertTriangle className="h-4 w-4 text-[var(--color-system-red)]" />
                       ) : (
-                        <step.icon className="h-4 w-4 text-zinc-500" />
+                        <step.icon className="h-4 w-4 text-[var(--color-text-tertiary)]" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-medium ${
-                        step.status === "done" ? "text-zinc-200" :
-                        step.status === "running" ? "text-cyan-300" :
-                        step.status === "error" ? "text-red-300" :
-                        "text-zinc-500"
+                      <p className={`text-[12px] font-semibold ${
+                        step.status === "done" ? "text-[var(--color-text-primary)]" :
+                        step.status === "running" ? "text-[var(--color-text-primary)]" :
+                        step.status === "error" ? "text-red-800" :
+                        "text-[var(--color-text-tertiary)]"
                       }`}>
                         {step.label}
                       </p>
                       {step.detail && (
-                        <p className="text-[10px] font-mono text-zinc-500 mt-0.5 truncate">{step.detail}</p>
+                        <p className="text-[10px] font-mono text-[var(--color-text-secondary)] mt-0.5 truncate">{step.detail}</p>
                       )}
                     </div>
                   </motion.div>
@@ -285,17 +285,20 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20"
+                    className="mt-5 p-4 rounded-xl bg-green-50 border border-green-200 shadow-sm"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Check className="h-5 w-5 text-emerald-400" />
-                      <span className="text-sm font-semibold text-emerald-300">Approval Submitted</span>
+                      <Check className="h-5 w-5 text-[var(--color-system-green)]" />
+                      <span className="text-[14px] font-semibold text-green-900">Approval Submitted</span>
                     </div>
-                    <p className="text-[10px] font-mono text-zinc-400 break-all mb-1">
-                      Nullifier: {nullifierHex}
-                    </p>
-                    <p className="text-[10px] text-zinc-500">
-                      Proof generated in {elapsedMs}ms (simulated) • Your identity remains anonymous
+                    <div className="bg-white rounded-lg p-2.5 border border-green-100 mb-2">
+                      <p className="text-[10px] text-green-700 uppercase tracking-wide font-semibold mb-1">Nullifier</p>
+                      <p className="text-[11px] font-mono text-green-900 break-all select-all">
+                        {nullifierHex}
+                      </p>
+                    </div>
+                    <p className="text-[11px] text-green-700 font-medium">
+                      Proof generated in {elapsedMs}ms (simulated). Identity remains anonymous.
                     </p>
                   </motion.div>
                 )}
@@ -305,19 +308,19 @@ export function ApprovalModal({ isOpen, onClose, proposalId, proposalTitle, onAp
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20"
+                    className="mt-5 p-4 rounded-xl bg-red-50 border border-red-200 shadow-sm"
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertTriangle className="h-4 w-4 text-red-400" />
-                      <span className="text-sm font-semibold text-red-300">Proof Failed</span>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <AlertTriangle className="h-4 w-4 text-[var(--color-system-red)]" />
+                      <span className="text-[14px] font-semibold text-red-900">Proof Failed</span>
                     </div>
-                    <p className="text-xs text-red-300/70">{errorMsg}</p>
+                    <p className="text-[12px] text-red-700 font-medium">{errorMsg}</p>
                   </motion.div>
                 )}
 
                 <button
                   onClick={handleClose}
-                  className="w-full mt-3 py-2.5 text-sm font-medium rounded-lg border border-white/10 text-zinc-300 hover:bg-white/5 transition-all"
+                  className="btn-secondary w-full justify-center mt-4"
                 >
                   {phase === "done" ? "Done" : phase === "error" ? "Close" : "Cancel"}
                 </button>

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import type { Proposal } from "@/lib/types";
+import type { Proposal, ProposalStatus } from "@/lib/types";
 import { FileText, ChevronRight } from "lucide-react";
 import { ThresholdRing } from "./threshold-ring";
 
@@ -9,10 +9,12 @@ interface ProposalCardProps {
   className?: string;
 }
 
-const statusColors = {
+const statusColors: Record<ProposalStatus, string> = {
   pending: "text-[var(--color-system-orange)]",
+  approved: "text-[var(--color-system-green)]",
   executed: "text-[var(--color-system-green)]",
   rejected: "text-[var(--color-system-red)]",
+  expired: "text-[var(--color-text-secondary)]",
 };
 
 export function ProposalCard({ proposal, className }: ProposalCardProps) {
@@ -27,7 +29,7 @@ export function ProposalCard({ proposal, className }: ProposalCardProps) {
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1.5">
-          <div className={cn("w-1.5 h-1.5 rounded-full", proposal.status === 'pending' ? 'bg-[var(--color-system-orange)]' : proposal.status === 'executed' ? 'bg-[var(--color-system-green)]' : 'bg-[var(--color-system-red)]')} />
+          <div className={cn("w-1.5 h-1.5 rounded-full", proposal.status === 'pending' ? 'bg-[var(--color-system-orange)]' : (proposal.status === 'executed' || proposal.status === 'approved') ? 'bg-[var(--color-system-green)]' : 'bg-[var(--color-system-red)]')} />
           <span className={cn("text-[11px] font-semibold uppercase tracking-wide", statusColors[proposal.status])}>
             {proposal.status}
           </span>
@@ -47,7 +49,7 @@ export function ProposalCard({ proposal, className }: ProposalCardProps) {
           <div className="flex items-center gap-1.5">
             <FileText className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
             <span className="text-[11px] font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
-              {(proposal.type || "Unknown").replace("_", " ")}
+              {(proposal.actionType || "Unknown").replace("_", " ")}
             </span>
           </div>
         </div>
@@ -56,8 +58,8 @@ export function ProposalCard({ proposal, className }: ProposalCardProps) {
       <div className="flex items-center justify-between sm:justify-end gap-5 pl-0 sm:pl-4 border-t sm:border-t-0 sm:border-l border-[var(--color-border-primary)] pt-4 sm:pt-0">
         <div className="shrink-0">
           <ThresholdRing
-            current={proposal.currentApprovals}
-            required={proposal.requiredApprovals}
+            current={proposal.approvalCount}
+            required={proposal.threshold}
             size={44}
             strokeWidth={3.5}
             showLabel={false}

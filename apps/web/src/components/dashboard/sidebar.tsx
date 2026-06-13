@@ -8,7 +8,7 @@ import { useDashboardStore } from "@/lib/store";
 import {
   LayoutDashboard, Layers, FileText, Shield, Wallet,
   Users, BarChart3, Settings, BookOpen, ChevronLeft,
-  Menu,
+  Menu, LogOut,
 } from "lucide-react";
 
 const navItems = [
@@ -25,7 +25,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { sidebarOpen, toggleSidebar } = useDashboardStore();
+  const { sidebarOpen, toggleSidebar, logout } = useDashboardStore();
 
   return (
     <>
@@ -134,9 +134,11 @@ export function Sidebar() {
             )}
           </AnimatePresence>
 
-          <div className="flex items-center gap-3 px-1">
-            <div className="w-8 h-8 rounded-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] flex items-center justify-center shrink-0 shadow-sm">
-              <span className="text-[10px] font-bold font-mono text-[var(--color-text-primary)]">SS</span>
+          <div className="flex items-center gap-3 px-1 mb-3">
+            <div className="w-8 h-8 rounded-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+              <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                <span className="text-[10px] font-bold font-mono text-indigo-700">0x4F</span>
+              </div>
             </div>
             <AnimatePresence>
               {sidebarOpen && (
@@ -144,14 +146,36 @@ export function Sidebar() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="overflow-hidden"
+                  className="overflow-hidden flex-1"
                 >
-                  <p className="text-[13px] font-semibold text-[var(--color-text-primary)] truncate">Protocol Treasury</p>
-                  <p className="text-[11px] text-[var(--color-text-secondary)] truncate">3-of-5 Multisig</p>
+                  <p className="text-[13px] font-semibold text-[var(--color-text-primary)] truncate">0x4F...a2B</p>
+                  <p className="text-[11px] text-[var(--color-text-secondary)] truncate">Connected Identity</p>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
+
+          <button
+            onClick={logout}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors w-full",
+              !sidebarOpen && "justify-center px-0"
+            )}
+          >
+            <LogOut className="h-[18px] w-[18px] shrink-0" />
+            <AnimatePresence>
+              {sidebarOpen && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="whitespace-nowrap overflow-hidden"
+                >
+                  Disconnect
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
         </div>
       </motion.aside>
     </>

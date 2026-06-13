@@ -14,14 +14,14 @@
   --color-bg-card: #ffffff;
 
   /* ---- Borders ---- */
-  --color-border-primary: rgba(0, 0, 0, 0.08);
-  --color-border-secondary: rgba(0, 0, 0, 0.15);
+  --color-border-primary: rgba(0, 0, 0, 0.12);
+  --color-border-secondary: rgba(0, 0, 0, 0.2);
 
   /* ---- Text: Crisp hierarchy ---- */
-  --color-text-primary: #1d1d1f;     /* Apple dark text */
-  --color-text-secondary: #86868b;
-  --color-text-tertiary: #a1a1a6;
-  --color-text-muted: #d2d2d7;
+  --color-text-primary: #111827;     /* High contrast black/dark gray */
+  --color-text-secondary: #4b5563;   /* Readable medium gray */
+  --color-text-tertiary: #6b7280;    /* Dark enough for legibility */
+  --color-text-muted: #9ca3af;
 
   /* ---- Accent: macOS System Blue ---- */
   --color-accent: #007aff;
@@ -53,11 +53,7 @@
    BASE STYLES
    ============================================================ */
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+
 
 html {
   scroll-behavior: smooth;

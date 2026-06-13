@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Copy, Check, Shield, Key, Users, Loader2 } from "lucide-react";
+import { X, Plus, Copy, Check, Shield, Key, Users, Loader2, AlertTriangle } from "lucide-react";
 
 interface MemberIdentity {
   index: number;
@@ -92,7 +92,7 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
           }
         }
       } catch {
-        // API not available — local-only mode
+        // API not available
       }
 
       onCreated?.({
@@ -119,7 +119,7 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -127,25 +127,25 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg mx-4 bg-zinc-900/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-lg mx-4 bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] rounded-2xl shadow-[var(--shadow-elevated)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/5">
+          <div className="flex items-center justify-between p-6 border-b border-[var(--color-border-primary)] bg-[var(--color-bg-primary)]">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-cyan-400/10">
-                <Shield className="h-5 w-5 text-cyan-400" />
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-accent)] flex items-center justify-center shadow-sm">
+                <Shield className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-white">Create Multisig</h2>
-                <p className="text-xs text-zinc-400">
+                <h2 className="text-[15px] font-semibold text-[var(--color-text-primary)] tracking-tight">Create Multisig</h2>
+                <p className="text-[12px] text-[var(--color-text-secondary)]">
                   {step === "config" && "Configure your shielded vault"}
                   {step === "identities" && "Save member secrets securely"}
                   {step === "confirm" && "Review and deploy"}
                 </p>
               </div>
             </div>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -154,30 +154,30 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
           {step === "config" && (
             <div className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Vault Name</label>
+                <label className="block text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">Vault Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Treasury Council"
-                  className="w-full px-4 py-2.5 text-sm rounded-lg bg-zinc-800/50 border border-white/5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                  className="w-full px-3 py-2 text-[13px] rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent-subtle)] transition-all shadow-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Description</label>
+                <label className="block text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Purpose of this multisig..."
                   rows={2}
-                  className="w-full px-4 py-2.5 text-sm rounded-lg bg-zinc-800/50 border border-white/5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-500/50 resize-none transition-all"
+                  className="w-full px-3 py-2 text-[13px] rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent-subtle)] resize-none transition-all shadow-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                    <Users className="inline h-3 w-3 mr-1" />Members (N)
+                  <label className="block text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5" /> Members (N)
                   </label>
                   <select
                     value={memberCount}
@@ -186,7 +186,7 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
                       setMemberCount(n);
                       if (threshold > n) setThreshold(n);
                     }}
-                    className="w-full px-4 py-2.5 text-sm rounded-lg bg-zinc-800/50 border border-white/5 text-white focus:outline-none focus:border-cyan-500/50 transition-all"
+                    className="w-full px-3 py-2 text-[13px] rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent-subtle)] transition-all shadow-sm"
                   >
                     {[2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
                       <option key={n} value={n}>{n} members</option>
@@ -194,13 +194,13 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                    <Key className="inline h-3 w-3 mr-1" />Threshold (M)
+                  <label className="block text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                    <Key className="h-3.5 w-3.5" /> Threshold (M)
                   </label>
                   <select
                     value={threshold}
                     onChange={(e) => setThreshold(parseInt(e.target.value))}
-                    className="w-full px-4 py-2.5 text-sm rounded-lg bg-zinc-800/50 border border-white/5 text-white focus:outline-none focus:border-cyan-500/50 transition-all"
+                    className="w-full px-3 py-2 text-[13px] rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent-subtle)] transition-all shadow-sm"
                   >
                     {Array.from({ length: memberCount }, (_, i) => i + 1).map((n) => (
                       <option key={n} value={n}>{n} of {memberCount}</option>
@@ -213,9 +213,9 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
                 <button
                   onClick={generateIdentities}
                   disabled={!name.trim()}
-                  className="w-full py-3 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg hover:shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <Plus className="inline h-4 w-4 mr-2" />
+                  <Plus className="h-4 w-4" />
                   Generate {memberCount} Identities
                 </button>
               </div>
@@ -224,37 +224,39 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
 
           {/* Step: Identities */}
           {step === "identities" && (
-            <div className="p-6 space-y-4">
-              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                <p className="text-xs text-amber-300">
-                  ⚠️ Save each member&apos;s secret key securely. These are the private keys used to generate anonymous approval proofs. They cannot be recovered.
+            <div className="p-6 space-y-4 bg-[var(--color-bg-secondary)]">
+              <div className="p-3 rounded-lg bg-orange-50 border border-orange-200 flex items-start gap-2.5">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-orange-500 mt-0.5" />
+                <p className="text-[12px] text-orange-800 font-medium">
+                  Save each member&apos;s secret key securely. These are the private keys used to generate anonymous approval proofs. They cannot be recovered.
                 </p>
               </div>
 
-              <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
+              <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                 {members.map((member) => (
                   <motion.div
                     key={member.index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: member.index * 0.08 }}
-                    className="p-3 rounded-lg bg-zinc-800/50 border border-white/5"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: member.index * 0.05 }}
+                    className="p-3.5 rounded-xl bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] shadow-sm"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-zinc-300">Member {member.index + 1}</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">Member {member.index + 1}</span>
                       <button
                         onClick={() => copySecret(member.index)}
-                        className="flex items-center gap-1 text-[10px] px-2 py-1 rounded bg-zinc-700/50 hover:bg-zinc-700 text-zinc-300 transition-colors"
+                        className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-md bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] transition-colors shadow-sm"
                       >
-                        {member.copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                        {member.copied ? <Check className="h-3 w-3 text-[var(--color-system-green)]" /> : <Copy className="h-3 w-3" />}
                         {member.copied ? "Copied!" : "Copy Secret"}
                       </button>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Secret Key</p>
-                      <p className="text-[10px] font-mono text-cyan-300/80 break-all leading-relaxed">{member.secretHex}</p>
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-2">Commitment</p>
-                      <p className="text-[10px] font-mono text-purple-300/60 break-all leading-relaxed">{member.commitmentHex}</p>
+                    <div className="space-y-1.5 bg-[var(--color-bg-secondary)] p-2.5 rounded-lg border border-[var(--color-border-primary)]">
+                      <p className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wide font-semibold">Secret Key</p>
+                      <p className="text-[11px] font-mono text-[var(--color-text-primary)] break-all leading-relaxed select-all">{member.secretHex}</p>
+                      <div className="h-px w-full bg-[var(--color-border-primary)] my-2" />
+                      <p className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wide font-semibold">Commitment</p>
+                      <p className="text-[11px] font-mono text-[var(--color-text-secondary)] break-all leading-relaxed select-all">{member.commitmentHex}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -263,14 +265,14 @@ export function CreateMultisigModal({ isOpen, onClose, onCreated }: CreateMultis
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setStep("config")}
-                  className="flex-1 py-2.5 text-sm font-medium rounded-lg border border-white/10 text-zinc-300 hover:bg-white/5 transition-all"
+                  className="btn-secondary flex-1 justify-center"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={isCreating}
-                  className="flex-1 py-2.5 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg hover:shadow-cyan-500/20 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
+                  className="btn-primary flex-1 justify-center disabled:opacity-60"
                 >
                   {isCreating && <Loader2 className="h-4 w-4 animate-spin" />}
                   Deploy Multisig

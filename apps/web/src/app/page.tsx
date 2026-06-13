@@ -36,7 +36,7 @@ export default function LandingPage() {
             <a href="#features" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Features</a>
             <a href="#architecture" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Architecture</a>
             <a href="https://github.com/MayankSen09/ShadowSig-Private-M-of-N-Multisig" target="_blank" rel="noopener noreferrer" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">GitHub</a>
-            <Link href="/dashboard" className="px-3.5 py-1.5 text-[13px] font-medium rounded-full bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity">
+            <Link href="/login" className="px-3.5 py-1.5 text-[13px] font-medium rounded-full bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity">
               Launch App
             </Link>
           </div>
@@ -62,7 +62,7 @@ export default function LandingPage() {
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }} className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/dashboard" className="btn-primary">
+            <Link href="/login" className="btn-primary">
               Launch App <ArrowRight className="h-4 w-4" />
             </Link>
             <a href="https://github.com/MayankSen09/ShadowSig-Private-M-of-N-Multisig" target="_blank" rel="noopener noreferrer" className="btn-secondary">

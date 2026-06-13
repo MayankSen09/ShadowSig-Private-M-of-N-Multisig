@@ -1,14 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useDashboardStore } from "@/lib/store";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { sidebarOpen, setSidebarOpen } = useDashboardStore();
+  const { sidebarOpen, setSidebarOpen, isAuthenticated } = useDashboardStore();
   const pathname = usePathname();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Auth Guard
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, mounted, router]);
+
+
 
   // Screen resize handler to automatically manage sidebar state
   useEffect(() => {
@@ -31,6 +46,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setSidebarOpen(false);
     }
   }, [pathname, setSidebarOpen]);
+
+  // If not mounted or not authenticated, render a loading state or null
+  if (!mounted || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-border-primary)] border-t-[var(--color-accent)] animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">

@@ -2,14 +2,14 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   TrendingUp, TrendingDown, Minus, Layers, FileText,
-  Shield, Clock, Wallet, Zap, Hash, Cpu
+  Shield, Clock, Wallet, Zap, Hash, Cpu, Users
 } from "lucide-react";
 
 interface MetricCardProps {
   title: string;
   value: string | number;
   trend?: number;
-  icon: "layers" | "file" | "shield" | "clock" | "wallet" | "zap" | "hash" | "cpu";
+  icon: "layers" | "file" | "shield" | "clock" | "wallet" | "zap" | "hash" | "cpu" | "users";
   className?: string;
 }
 
@@ -22,6 +22,7 @@ const iconMap = {
   zap: Zap,
   hash: Hash,
   cpu: Cpu,
+  users: Users,
 };
 
 export function MetricCard({ title, value, trend, icon, className }: MetricCardProps) {
