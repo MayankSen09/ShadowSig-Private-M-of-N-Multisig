@@ -139,6 +139,23 @@ pub async fn create_multisig(
         hex::encode(&multisig.merkle_root[..8]),
     );
 
+    // Relay to LEZ Node (On-Chain)
+    let payload = serde_json::json!({
+        "multisig_id": hex::encode(multisig.id.as_bytes()),
+        "merkle_root": hex::encode(&multisig.merkle_root),
+        "threshold": multisig.threshold,
+        "member_count": multisig.member_count
+    });
+    
+    match state.http_client.post(&format!("{}/lez/multisig", state.lez_rpc_url))
+        .json(&payload)
+        .send()
+        .await {
+        Ok(res) if res.status().is_success() => tracing::info!("✅ Successfully relayed MultisigConfig to LEZ Blockchain"),
+        Ok(res) => tracing::error!("❌ LEZ Node rejected multisig: {:?}", res.text().await),
+        Err(e) => tracing::error!("❌ Failed to reach LEZ Node: {}", e),
+    }
+
     Json(ApiResponse::ok(multisig))
 }
 
@@ -157,6 +174,25 @@ pub async fn get_multisig(
         }
         Err(e) => {
             tracing::error!("Failed to get multisig: {:?}", e);
+            Json(ApiResponse::err(e.to_string()))
+        }
+    }
+}
+
+pub async fn get_members(
+    State(state): State<Arc<AppState>>,
+    Path(multisig_id): Path<Uuid>,
+) -> Json<ApiResponse<Vec<Member>>> {
+    match sqlx::query_as::<_, Member>("SELECT * FROM members WHERE multisig_id = $1 ORDER BY leaf_index ASC")
+        .bind(multisig_id)
+        .fetch_all(&state.db_pool)
+        .await
+    {
+        Ok(list) => {
+            Json(ApiResponse::ok(list))
+        }
+        Err(e) => {
+            tracing::error!("Failed to get members: {:?}", e);
             Json(ApiResponse::err(e.to_string()))
         }
     }

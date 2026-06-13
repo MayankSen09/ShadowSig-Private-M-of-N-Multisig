@@ -96,6 +96,22 @@ pub async fn create_proposal(
         proposal.threshold,
     );
 
+    // Relay to LEZ Node (On-Chain)
+    let payload = serde_json::json!({
+        "proposal_id": hex::encode(proposal.id.as_bytes()),
+        "multisig_id": hex::encode(proposal.multisig_id.as_bytes()),
+        "action_hash": hex::encode(shadowsig_shared::crypto::sha256(proposal.action_data.as_ref().map(|v| serde_json::to_string(v).unwrap_or_default()).unwrap_or_default().as_bytes()))
+    });
+    
+    match state.http_client.post(&format!("{}/lez/proposal", state.lez_rpc_url))
+        .json(&payload)
+        .send()
+        .await {
+        Ok(res) if res.status().is_success() => tracing::info!("✅ Successfully relayed Proposal to LEZ Blockchain"),
+        Ok(res) => tracing::error!("❌ LEZ Node rejected proposal: {:?}", res.text().await),
+        Err(e) => tracing::error!("❌ Failed to reach LEZ Node: {}", e),
+    }
+
     Json(ApiResponse::ok(proposal))
 }
 
