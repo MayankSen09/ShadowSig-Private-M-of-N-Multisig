@@ -74,6 +74,19 @@ pub async fn create_multisig(
     let now = Utc::now();
     let id = Uuid::new_v4();
 
+    // Sanity-check: threshold must be at least 1 and cannot exceed the number of members
+    if req.threshold < 1 || req.threshold > commitments.len() as i32 {
+        tracing::warn!(
+            "Invalid threshold {}/{} for multisig '{}'",
+            req.threshold,
+            commitments.len(),
+            req.name
+        );
+        return Json(ApiResponse::err(
+            "InvalidThreshold: threshold must be between 1 and member_count",
+        ));
+    }
+
     let multisig = Multisig {
         id,
         name: req.name,
