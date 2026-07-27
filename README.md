@@ -109,9 +109,21 @@ As per the LP-0002 prize criteria:
 - **Shielded Approvals**: On-chain observers only see that an approval occurred and that the threshold was reached, never member identities.
 
 Run the end-to-end integration demo against the LEZ local sequencer:
-```bash
-bash scripts/demo.sh
-```
+- **Unix/Linux/macOS**:
+  ```bash
+  bash scripts/demo.sh
+  ```
+- **Windows (PowerShell)**:
+  ```powershell
+  .\scripts\demo.ps1
+  ```
+
+### Developer Guides & Resources
+
+For deep-dives into the codebase and setting up your environment, see:
+- [Developer Onboarding & Setup Guide](docs/developer_onboarding.md)
+- [API Reference Specification](docs/api_specification.md)
+- [Architecture & Diagrams](docs/architecture.md)
 
 ### Prerequisites
 
