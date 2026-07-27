@@ -3,6 +3,8 @@ use axum::{extract::State, Json};
 use shadowsig_shared::models::*;
 use std::sync::Arc;
 
+pub const DEFAULT_AVG_PROOF_LATENCY_MS: f64 = 2340.0;
+
 pub async fn get_metrics(State(state): State<Arc<AppState>>) -> Json<ApiResponse<MetricsResponse>> {
     let total_multisigs: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM multisigs")
         .fetch_one(&state.db_pool)
@@ -30,7 +32,7 @@ pub async fn get_metrics(State(state): State<Arc<AppState>>) -> Json<ApiResponse
         total_multisigs,
         active_proposals,
         proofs_generated,
-        avg_proof_latency_ms: if proofs_generated > 0 { 2340.0 } else { 0.0 },
+        avg_proof_latency_ms: if proofs_generated > 0 { DEFAULT_AVG_PROOF_LATENCY_MS } else { 0.0 },
         nullifiers_consumed,
     };
 

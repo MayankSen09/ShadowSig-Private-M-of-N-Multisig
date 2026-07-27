@@ -7,6 +7,9 @@ use shadowsig_shared::models::*;
 use std::sync::Arc;
 use uuid::Uuid;
 
+pub const DEFAULT_MOCK_COMPUTE_UNITS: u64 = 45200;
+pub const DEFAULT_MOCK_LATENCY_MS: u64 = 2140;
+
 pub async fn generate_proof(
     State(state): State<Arc<AppState>>,
     Json(req): Json<GenerateProofRequest>,
@@ -97,7 +100,7 @@ pub async fn generate_proof(
                 "proposal_id": proposal_id,
                 "proof": receipt_hex,
                 "nullifier": hex::encode(&proof_result.journal.nullifier_hash),
-                "compute_units": 45200,
+                "compute_units": DEFAULT_MOCK_COMPUTE_UNITS,
                 "latency_ms": proof_result.generation_time_ms,
             })))
         }
@@ -113,7 +116,7 @@ pub async fn get_proof(
     Json(ApiResponse::ok(serde_json::json!({
         "id": id,
         "status": "verified",
-        "compute_units": 45200,
-        "latency_ms": 2140,
+        "compute_units": DEFAULT_MOCK_COMPUTE_UNITS,
+        "latency_ms": DEFAULT_MOCK_LATENCY_MS,
     })))
 }
