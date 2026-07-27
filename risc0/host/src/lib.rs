@@ -1,21 +1,40 @@
 use sha2::{Sha256, Digest};
 use serde::{Serialize, Deserialize};
 
+/// The private witness passed into the ZK prover.
+///
+/// Contains everything the circuit needs to produce a valid nullifier
+/// and verify Merkle membership without revealing the identity secret.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShadowSigWitness {
+    /// The member's private identity secret (32 bytes).
+    /// Never leaves the client — only its commitment is stored on-chain.
     pub identity_secret: Vec<u8>,
+    /// Sibling hashes along the Merkle path from this leaf to the root.
     pub merkle_path: Vec<Vec<u8>>,
+    /// 0-based index of this member's leaf in the Merkle tree.
     pub leaf_index: u32,
+    /// Expected Merkle root of the member set (must match the on-chain value).
     pub merkle_root: Vec<u8>,
+    /// Unique identifier of the proposal being approved (prevents replay).
     pub proposal_id: Vec<u8>,
+    /// The member's vote — true = approve, false = reject.
     pub vote: bool,
 }
 
+/// The public journal produced by the ZK circuit.
+///
+/// Written to the receipt and verified by the smart contract.
+/// Contains no private data — the identity secret is never included.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ShadowSigJournal {
+    /// SHA-256(identity_secret || proposal_id) — prevents double-voting.
     pub nullifier_hash: Vec<u8>,
+    /// The Merkle root the proof was generated against.
     pub merkle_root: Vec<u8>,
+    /// The proposal this approval is bound to.
     pub proposal_id: Vec<u8>,
+    /// The vote included in the proof.
     pub vote: bool,
 }
 
