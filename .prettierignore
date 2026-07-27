@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+bun.lock
+
+# Build outputs
+.next/
+out/
+dist/
+target/
+
+# System and logs
+.idea/
+.vscode/
+.gemini/
+*.log
+*.so
+*.bin
+*.b64
+competitor_contents.json
