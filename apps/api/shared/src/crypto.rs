@@ -1,4 +1,7 @@
+use hmac::{Hmac, Mac};
 use sha2::{Digest, Sha256};
+
+type HmacSha256 = Hmac<Sha256>;
 
 /// Compute SHA-256 hash of input bytes
 pub fn sha256(data: &[u8]) -> Vec<u8> {
@@ -18,6 +21,16 @@ pub fn compute_nullifier(secret: &[u8], proposal_id: &[u8]) -> Vec<u8> {
 /// Compute a commitment from a secret key
 pub fn compute_commitment(secret: &[u8]) -> Vec<u8> {
     sha256(secret)
+}
+
+/// Compute a domain-separated HMAC-SHA256 commitment.
+/// The `domain` label prevents cross-context hash collisions
+/// (e.g. distinguishing member commitments from proposal hashes).
+pub fn compute_commitment_v2(domain: &[u8], secret: &[u8]) -> Vec<u8> {
+    let mut mac = HmacSha256::new_from_slice(domain)
+        .expect("HMAC accepts any key length");
+    mac.update(secret);
+    mac.finalize().into_bytes().to_vec()
 }
 
 /// Verify a Merkle membership proof
