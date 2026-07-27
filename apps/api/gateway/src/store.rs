@@ -32,6 +32,13 @@ impl InMemoryStore {
             commitment_map: RwLock::new(HashMap::new()),
         }
     }
+}
+
+impl Default for InMemoryStore {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
     // ── Multisigs ──
 
