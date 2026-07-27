@@ -38,7 +38,9 @@ async fn main() -> anyhow::Result<()> {
         "Connecting to PostgreSQL database at {}...",
         config.database_url
     );
-    let db_pool = sqlx::PgPool::connect(&config.database_url)
+    let db_pool = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(config.max_db_connections)
+        .connect(&config.database_url)
         .await
         .map_err(|e| anyhow::anyhow!("Failed to connect to database: {}", e))?;
 

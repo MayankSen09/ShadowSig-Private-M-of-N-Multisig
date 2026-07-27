@@ -7,6 +7,8 @@ pub struct Config {
     pub lez_rpc_url: String,
     pub host: String,
     pub port: u16,
+    /// Maximum number of connections in the Postgres pool (default: 10).
+    pub max_db_connections: u32,
 }
 
 impl Config {
@@ -24,6 +26,10 @@ impl Config {
                 .ok()
                 .and_then(|p| p.parse().ok())
                 .unwrap_or(8080),
+            max_db_connections: std::env::var("MAX_DB_CONNECTIONS")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(10),
         }
     }
 }
