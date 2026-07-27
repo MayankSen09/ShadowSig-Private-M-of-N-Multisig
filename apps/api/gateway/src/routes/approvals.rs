@@ -55,7 +55,16 @@ pub async fn submit_approval(
     let proposal = match proposal {
         None => return Json(ApiResponse::err("ProposalNotFound")),
         Some(p) if p.status == "executed" => return Json(ApiResponse::err("ProposalExecuted")),
-        Some(p) => p,
+        Some(p) => {
+            // Reject approvals for proposals that have passed their deadline
+            if let Some(expires_at) = p.expires_at {
+                if Utc::now() > expires_at {
+                    tracing::warn!("Approval rejected: proposal {} has expired", p.id);
+                    return Json(ApiResponse::err("ProposalExpired"));
+                }
+            }
+            p
+        }
     };
 
     // Retrieve multisig
