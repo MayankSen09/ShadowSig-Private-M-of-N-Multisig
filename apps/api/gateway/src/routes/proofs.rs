@@ -102,6 +102,7 @@ pub async fn generate_proof(
                 "nullifier": hex::encode(&proof_result.journal.nullifier_hash),
                 "compute_units": DEFAULT_MOCK_COMPUTE_UNITS,
                 "latency_ms": proof_result.generation_time_ms,
+                "is_simulated": proof_result.is_simulated,
             })))
         }
         Err(e) => Json(ApiResponse::err(format!("ProverError: {}", e))),
