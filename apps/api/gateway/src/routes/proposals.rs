@@ -61,7 +61,7 @@ pub async fn create_proposal(
         approval_count: 0,
         threshold: multisig.threshold,
         status: "pending".to_string(),
-        expires_at: Some(now + chrono::Duration::days(7)),
+        expires_at: Some(now + chrono::Duration::days(req.expires_in_days)),
         created_at: now,
         updated_at: now,
     };

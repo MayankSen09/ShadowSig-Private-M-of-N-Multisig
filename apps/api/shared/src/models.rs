@@ -119,6 +119,13 @@ pub struct CreateProposalRequest {
     pub description: Option<String>,
     pub action_type: String,
     pub action_data: Option<serde_json::Value>,
+    /// Number of days until the proposal expires. Defaults to 7.
+    #[serde(default = "default_expires_in_days")]
+    pub expires_in_days: i64,
+}
+
+fn default_expires_in_days() -> i64 {
+    7
 }
 
 #[derive(Debug, Deserialize)]
