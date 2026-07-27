@@ -88,3 +88,37 @@ ShadowSig is a privacy-preserving M-of-N multisig platform built for the Logos E
 3. **Approve**: Members locally generate ZK proofs (membership + nullifier) and submit anonymously
 4. **Verify**: Contract checks proof, nullifier uniqueness, increments approval count
 5. **Execute**: Any relayer triggers execution once threshold is met — unlinkable to approvers
+
+## ZK Proof Submission & Validation Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Member as Multisig Member
+    participant FE as Frontend (Next.js)
+    participant GW as API Gateway (Axum)
+    participant PS as Proof Service (Risc0)
+    participant DB as Database (PostgreSQL)
+    participant LEZ as LEZ Smart Contract
+
+    Member->>FE: Trigger Approve Proposal
+    FE->>FE: Retrieve Identity Secret & Merkle Path
+    FE->>GW: Request Proof Generation (GenerateProofRequest)
+    GW->>PS: Execute SimulatedProver::prove(witness)
+    PS-->>GW: Return ZK STARK Receipt
+    GW-->>FE: Send ZK Proof (hex-encoded)
+    FE->>GW: Submit Approval (SubmitApprovalRequest)
+    GW->>DB: Begin DB Transaction & Check Nullifier Unique
+    alt Nullifier Already Used
+        DB-->>GW: Error: NullifierAlreadyUsed
+        GW-->>FE: JSON Error Response
+    else Nullifier is New
+        GW->>PS: SimulatedProver::verify(proof, merkle_root, proposal_id)
+        PS-->>GW: Return Verification Result (Success)
+        GW->>DB: Write Nullifier & Approval Record
+        GW->>DB: Update Proposal Count & Status (approved/pending)
+        GW->>DB: Commit Transaction
+        GW->>LEZ: Relay ZK Proof to LEZ Blockchain (/lez/approve)
+        GW-->>FE: Return Success Response
+    end
+```
