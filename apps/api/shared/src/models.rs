@@ -178,6 +178,8 @@ pub struct HealthResponse {
     pub status: String,
     pub version: String,
     pub uptime_seconds: u64,
+    /// Whether the API can reach the backing Postgres database.
+    pub db_connected: bool,
 }
 
 #[derive(Debug, Serialize)]
