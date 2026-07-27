@@ -74,14 +74,17 @@ pub async fn execute_action(
         return Json(ApiResponse::err(e.to_string()));
     }
 
+    let tx_hex = execution
+        .tx_hash
+        .as_deref()
+        .map(|h| hex::encode(&h[..8.min(h.len())]))
+        .unwrap_or_else(|| "none".to_string());
+
     tracing::info!(
-        "🚀 Proposal {} executed — tx: {}",
+        "🚀 Proposal {} executed — tx: {} (multisig: {})",
         req.proposal_id,
-        execution
-            .tx_hash
-            .as_ref()
-            .map(|h| hex::encode(&h[..8]))
-            .unwrap_or_default(),
+        tx_hex,
+        proposal.multisig_id,
     );
 
     // Relay to LEZ Node (On-Chain)
