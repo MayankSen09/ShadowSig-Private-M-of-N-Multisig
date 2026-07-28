@@ -1,6 +1,7 @@
 use crate::AppState;
 use axum::{extract::State, Json};
 use chrono::Utc;
+use shadowsig_event_service::{Event, EventBus, EventType};
 use shadowsig_shared::models::*;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -172,6 +173,25 @@ pub async fn submit_approval(
         req.proposal_id,
         &req.nullifier[..16],
     );
+
+    // Publish real-time events to WebSocket subscribers
+    state.event_bus.publish(Event::new(
+        EventType::ApprovalSubmitted,
+        serde_json::json!({
+            "proposal_id": req.proposal_id,
+            "approval_count": new_approval_count,
+            "threshold": proposal.threshold,
+        }),
+    ));
+    if new_approval_count >= proposal.threshold {
+        state.event_bus.publish(Event::new(
+            EventType::ThresholdReached,
+            serde_json::json!({
+                "proposal_id": req.proposal_id,
+                "multisig_id": proposal.multisig_id,
+            }),
+        ));
+    }
 
     // Get multisig to build mock journal for LEZ
     if let Ok(multisig) = sqlx::query_as::<_, Multisig>("SELECT * FROM multisigs WHERE id = $1")

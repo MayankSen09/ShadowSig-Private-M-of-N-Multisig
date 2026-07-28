@@ -4,6 +4,7 @@ use axum::{
     Json,
 };
 use chrono::Utc;
+use shadowsig_event_service::{Event, EventType};
 use shadowsig_shared::models::*;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -151,6 +152,16 @@ pub async fn create_multisig(
         multisig.member_count,
         hex::encode(&multisig.merkle_root[..8]),
     );
+
+    state.event_bus.publish(Event::new(
+        EventType::MultisigCreated,
+        serde_json::json!({
+            "multisig_id": multisig.id,
+            "name": multisig.name,
+            "threshold": multisig.threshold,
+            "member_count": multisig.member_count,
+        }),
+    ));
 
     // Relay to LEZ Node (On-Chain)
     let payload = serde_json::json!({

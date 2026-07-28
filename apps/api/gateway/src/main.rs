@@ -2,6 +2,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use shadowsig_event_service::EventBus;
 use std::sync::Arc;
 use std::time::Instant;
 use tower_http::cors::{Any, CorsLayer};
@@ -16,6 +17,8 @@ pub struct AppState {
     pub db_pool: sqlx::PgPool,
     pub http_client: reqwest::Client,
     pub lez_rpc_url: String,
+    /// Real-time event bus — broadcast channel for WebSocket clients.
+    pub event_bus: Arc<EventBus>,
 }
 
 #[tokio::main]
@@ -51,11 +54,36 @@ async fn main() -> anyhow::Result<()> {
         .await
         .map_err(|e| anyhow::anyhow!("Failed to run database migrations: {}", e))?;
 
+    // Spawn background task: expire stale proposals every 60 seconds
+    {
+        let pool = db_pool.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(std::time::Duration::from_secs(60));
+            loop {
+                interval.tick().await;
+                match sqlx::query(
+                    "UPDATE proposals SET status = 'expired', updated_at = NOW() \
+                     WHERE status = 'pending' AND expires_at IS NOT NULL AND expires_at < NOW()",
+                )
+                .execute(&pool)
+                .await
+                {
+                    Ok(r) if r.rows_affected() > 0 => {
+                        tracing::info!("⏰ Expired {} stale proposals", r.rows_affected());
+                    }
+                    Err(e) => tracing::warn!("Proposal expiry scan error: {}", e),
+                    _ => {}
+                }
+            }
+        });
+    }
+
     let state = Arc::new(AppState {
         start_time: Instant::now(),
         db_pool,
         http_client: reqwest::Client::new(),
         lez_rpc_url: config.lez_rpc_url,
+        event_bus: EventBus::new(),
     });
 
     // CORS configuration
@@ -74,6 +102,8 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         // Health
         .route("/health", get(routes::health::health_check))
+        // WebSocket event stream
+        .route("/api/ws", get(routes::ws::ws_handler))
         // Multisigs
         .route("/api/multisigs", get(routes::multisigs::list_multisigs))
         .route("/api/multisigs", post(routes::multisigs::create_multisig))
@@ -92,6 +122,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/execute", post(routes::execute::execute_action))
         // Metrics
         .route("/api/metrics", get(routes::metrics::get_metrics))
+        // Treasury
+        .route("/api/treasury", get(routes::treasury::list_all_treasury_actions))
+        .route("/api/treasury/{multisig_id}", get(routes::treasury::list_treasury_actions))
         // Middleware
         .layer(cors)
         .layer(trace_layer)

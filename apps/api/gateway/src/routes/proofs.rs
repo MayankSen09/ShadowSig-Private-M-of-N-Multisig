@@ -93,6 +93,25 @@ pub async fn generate_proof(
 
     match shadowsig_host::SimulatedProver::prove(&witness) {
         Ok(proof_result) => {
+            let latency_ms = proof_result.generation_time_ms;
+
+            // Persist proof generation audit record to verifier_logs
+            if let Err(e) = sqlx::query(
+                "INSERT INTO verifier_logs (id, proof_id, verifier_program, result, compute_units, latency_ms, created_at) \
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)"
+            )
+            .bind(Uuid::new_v4())
+            .bind(proof_id)
+            .bind(if proof_result.is_simulated { "SimulatedProver" } else { "Risc0zkVM" })
+            .bind(true)
+            .bind(DEFAULT_MOCK_COMPUTE_UNITS as i64)
+            .bind(latency_ms as i32)
+            .bind(chrono::Utc::now())
+            .execute(&state.db_pool)
+            .await {
+                tracing::warn!("Failed to insert verifier_log: {:?}", e);
+            }
+
             let receipt_hex = hex::encode(serde_json::to_vec(&proof_result).unwrap_or_default());
             Json(ApiResponse::ok(serde_json::json!({
                 "proof_id": proof_id,
@@ -101,7 +120,7 @@ pub async fn generate_proof(
                 "proof": receipt_hex,
                 "nullifier": hex::encode(&proof_result.journal.nullifier_hash),
                 "compute_units": DEFAULT_MOCK_COMPUTE_UNITS,
-                "latency_ms": proof_result.generation_time_ms,
+                "latency_ms": latency_ms,
                 "is_simulated": proof_result.is_simulated,
             })))
         }

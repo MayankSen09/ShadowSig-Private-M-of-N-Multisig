@@ -1,6 +1,7 @@
 use crate::AppState;
 use axum::{extract::State, Json};
 use chrono::Utc;
+use shadowsig_event_service::{Event, EventType};
 use shadowsig_shared::models::*;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -74,6 +75,33 @@ pub async fn execute_action(
         return Json(ApiResponse::err(e.to_string()));
     }
 
+    // Write treasury action audit record if the proposal carried a transfer payload
+    if let Some(action_data) = &proposal.action_data {
+        let asset = action_data.get("asset").and_then(|v| v.as_str()).unwrap_or("LGS");
+        let amount_str = action_data.get("amount").map(|v| v.to_string());
+        let recipient_hex = action_data.get("recipient").and_then(|v| v.as_str());
+        let recipient_bytes: Option<Vec<u8>> = recipient_hex
+            .and_then(|h| hex::decode(h.trim_start_matches("0x")).ok());
+
+        if let Err(e) = sqlx::query(
+            "INSERT INTO treasury_actions (id, multisig_id, action_type, asset, amount, recipient, execution_id, created_at) \
+             VALUES ($1, $2, $3, $4, $5::numeric, $6, $7, $8)"
+        )
+        .bind(Uuid::new_v4())
+        .bind(proposal.multisig_id)
+        .bind(&proposal.action_type)
+        .bind(asset)
+        .bind(amount_str.as_deref())
+        .bind(recipient_bytes.as_deref())
+        .bind(execution.id)
+        .bind(now)
+        .execute(&state.db_pool)
+        .await {
+            tracing::warn!("Failed to insert treasury_action: {:?}", e);
+        }
+    }
+
+
     let tx_hex = execution
         .tx_hash
         .as_deref()
@@ -86,6 +114,17 @@ pub async fn execute_action(
         tx_hex,
         proposal.multisig_id,
     );
+
+    // Publish real-time execution event to WebSocket subscribers
+    state.event_bus.publish(Event::new(
+        EventType::ExecutionCompleted,
+        serde_json::json!({
+            "proposal_id": req.proposal_id,
+            "multisig_id": proposal.multisig_id,
+            "execution_id": execution.id,
+            "tx_hash": &tx_hex,
+        }),
+    ));
 
     // Relay to LEZ Node (On-Chain)
     let payload = serde_json::json!({

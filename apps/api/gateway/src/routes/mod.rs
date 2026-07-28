@@ -5,3 +5,5 @@ pub mod metrics;
 pub mod multisigs;
 pub mod proofs;
 pub mod proposals;
+pub mod treasury;
+pub mod ws;
