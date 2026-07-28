@@ -162,6 +162,21 @@ export function useExecuteProposal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["proposals"] });
       queryClient.invalidateQueries({ queryKey: ["metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["treasury"] });
+    },
+  });
+}
+
+// Treasury
+export function useTreasuryActions(multisigId?: string) {
+  return useQuery({
+    queryKey: ["treasury", multisigId],
+    queryFn: async () => {
+      const { data } = multisigId 
+        ? await api.get<ApiResponse<any[]>>(`/treasury/${multisigId}`)
+        : await api.get<ApiResponse<any[]>>("/treasury");
+      if (!data.success) throw new Error(data.error || "Failed to fetch treasury actions");
+      return data.data || [];
     },
   });
 }

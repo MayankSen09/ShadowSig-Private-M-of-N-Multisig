@@ -1,16 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMetrics } from "@/hooks/useApi";
+import { useMetrics, useTreasuryActions } from "@/hooks/useApi";
 import { TreasuryPanel } from "@/components/ui/treasury-panel";
 import { ExecutionStatusCard } from "@/components/ui/execution-status-card";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Wallet, ArrowUpRight, ArrowDownRight, BarChart3 } from "lucide-react";
 
 export default function TreasuryPage() {
-  const { data: metrics, isLoading } = useMetrics();
+  const { data: metrics, isLoading: loadingMetrics } = useMetrics();
+  const { data: actions, isLoading: loadingActions } = useTreasuryActions();
 
-  if (isLoading) {
+  if (loadingMetrics || loadingActions) {
     return <div className="p-8 text-center text-[var(--color-text-secondary)]">Loading treasury...</div>;
   }
 
@@ -41,9 +42,29 @@ export default function TreasuryPage() {
         <TreasuryPanel assets={[]} />
         <div className="space-y-4">
           <h3 className="text-sm font-semibold">Recent Executions</h3>
-          <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-16 text-center shadow-sm">
-            <p className="text-[14px] font-medium text-[var(--color-text-tertiary)]">No recent executions found</p>
-          </div>
+          {actions && actions.length > 0 ? (
+            <div className="bg-[var(--color-bg-secondary)] rounded-2xl border border-[var(--color-border-primary)] shadow-sm divide-y divide-[var(--color-border-secondary)]">
+              {actions.map((action: any) => (
+                <div key={action.id} className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-[14px] font-medium text-[var(--color-text-primary)]">{action.action_type}</p>
+                    <p className="text-[12px] text-[var(--color-text-secondary)] mt-0.5">
+                      {new Date(action.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[14px] font-semibold text-[var(--color-text-primary)]">
+                      {action.amount} {action.asset}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-16 text-center shadow-sm">
+              <p className="text-[14px] font-medium text-[var(--color-text-tertiary)]">No recent executions found</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
