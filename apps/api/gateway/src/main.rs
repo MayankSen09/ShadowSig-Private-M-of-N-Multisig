@@ -6,6 +6,7 @@ use deadpool_redis::{Config as RedisConfig, Runtime};
 use shadowsig_event_service::EventBus;
 use std::sync::Arc;
 use std::time::Instant;
+use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -109,6 +110,18 @@ async fn main() -> anyhow::Result<()> {
         .on_request(tower_http::trace::DefaultOnRequest::new().level(tracing::Level::INFO))
         .on_response(tower_http::trace::DefaultOnResponse::new().level(tracing::Level::INFO));
 
+    // Rate Limiting Config: 60 req/min
+    let governor_conf = Box::new(
+        GovernorConfigBuilder::default()
+            .per_second(1)
+            .burst_size(60)
+            .finish()
+            .unwrap(),
+    );
+    let rate_limit_layer = GovernorLayer {
+        config: Box::leak(governor_conf),
+    };
+
     // Build router
     let app = Router::new()
         // Health
@@ -148,6 +161,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/treasury", get(routes::treasury::list_all_treasury_actions))
         .route("/api/treasury/{multisig_id}", get(routes::treasury::list_treasury_actions))
         // Middleware
+        .layer(rate_limit_layer)
         .layer(cors)
         .layer(trace_layer)
         .with_state(state);

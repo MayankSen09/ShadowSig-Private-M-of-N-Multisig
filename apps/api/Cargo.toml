@@ -32,3 +32,5 @@ hmac = "0.12"
 redis = { version = "0.27", features = ["tokio-comp", "json"] }
 deadpool-redis = "0.17"
 jsonwebtoken = "9.3"
+tower_governor = "0.4"
+

@@ -28,6 +28,7 @@ hex.workspace = true
 redis.workspace = true
 deadpool-redis.workspace = true
 jsonwebtoken.workspace = true
+tower_governor.workspace = true
 
 shadowsig-shared = { path = "../shared" }
 shadowsig-host = { path = "../../../risc0/host" }
