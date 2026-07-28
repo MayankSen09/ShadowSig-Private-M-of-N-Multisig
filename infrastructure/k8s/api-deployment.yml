@@ -30,6 +30,13 @@ spec:
                 secretKeyRef:
                   name: shadowsig-secrets
                   key: redis-url
+            - name: LEZ_RPC_URL
+              value: "http://lez-node.default.svc.cluster.local:9090"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: shadowsig-secrets
+                  key: JWT_SECRET
             - name: RUST_LOG
               value: "shadowsig=info"
           resources:

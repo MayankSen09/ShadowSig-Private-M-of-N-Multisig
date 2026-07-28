@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shadowsig-web
+  labels:
+    app: shadowsig-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shadowsig-web
+  template:
+    metadata:
+      labels:
+        app: shadowsig-web
+    spec:
+      containers:
+      - name: web
+        image: ghcr.io/mayanksen09/shadowsig-web:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "https://api.shadowsig.local"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shadowsig-web-svc
+spec:
+  selector:
+    app: shadowsig-web
+  ports:
+  - port: 80
+    targetPort: 3000
