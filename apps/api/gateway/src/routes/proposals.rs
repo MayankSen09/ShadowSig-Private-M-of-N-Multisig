@@ -4,6 +4,7 @@ use axum::{
     Json,
 };
 use chrono::Utc;
+use redis::AsyncCommands;
 use shadowsig_shared::models::*;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -118,18 +119,40 @@ pub async fn create_proposal(
 pub async fn get_proposal(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
-) -> Json<ApiResponse<Option<Proposal>>> {
+) -> Json<ApiResponse<Proposal>> {
+    let cache_key = format!("proposal:{}", id);
+
+    // 1. Try fetching from Redis cache first
+    if let Ok(mut redis_conn) = state.redis_pool.get().await {
+        if let Ok(cached_data) = redis_conn.get::<_, Option<String>>(&cache_key).await {
+            if let Some(data) = cached_data {
+                if let Ok(proposal) = serde_json::from_str(&data) {
+                    tracing::debug!("Cache hit for {}", cache_key);
+                    return Json(ApiResponse::ok(proposal));
+                }
+            }
+        }
+    }
+
+    // 2. Cache miss — fetch from PostgreSQL
+    tracing::debug!("Cache miss for {} — fetching from DB", cache_key);
     match sqlx::query_as::<_, Proposal>("SELECT * FROM proposals WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db_pool)
         .await
     {
-        Ok(result) => {
-            tracing::debug!("Fetching proposal: {} — found: {}", id, result.is_some());
-            Json(ApiResponse::ok(result))
+        Ok(Some(proposal)) => {
+            // 3. Write back to cache with 5 minute (300s) TTL
+            if let Ok(mut redis_conn) = state.redis_pool.get().await {
+                if let Ok(json_data) = serde_json::to_string(&proposal) {
+                    let _: Result<(), _> = redis_conn.set_ex(&cache_key, json_data, 300).await;
+                }
+            }
+            Json(ApiResponse::ok(proposal))
         }
+        Ok(None) => Json(ApiResponse::err("ProposalNotFound")),
         Err(e) => {
-            tracing::error!("Failed to get proposal: {:?}", e);
+            tracing::error!("Database error fetching proposal: {:?}", e);
             Json(ApiResponse::err(e.to_string()))
         }
     }

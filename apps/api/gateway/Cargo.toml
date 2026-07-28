@@ -25,6 +25,10 @@ reqwest.workspace = true
 dotenvy.workspace = true
 
 hex.workspace = true
+redis.workspace = true
+deadpool-redis.workspace = true
+jsonwebtoken.workspace = true
 
 shadowsig-shared = { path = "../shared" }
 shadowsig-host = { path = "../../../risc0/host" }
+shadowsig-event-service = { path = "../../../services/event-service" }

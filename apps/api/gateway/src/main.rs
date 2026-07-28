@@ -2,6 +2,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use deadpool_redis::{Config as RedisConfig, Runtime};
 use shadowsig_event_service::EventBus;
 use std::sync::Arc;
 use std::time::Instant;
@@ -10,11 +11,13 @@ use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod config;
+mod middleware;
 mod routes;
 
 pub struct AppState {
     pub start_time: Instant,
     pub db_pool: sqlx::PgPool,
+    pub redis_pool: deadpool_redis::Pool,
     pub http_client: reqwest::Client,
     pub lez_rpc_url: String,
     /// Real-time event bus — broadcast channel for WebSocket clients.
@@ -78,9 +81,17 @@ async fn main() -> anyhow::Result<()> {
         });
     }
 
+    // Setup Redis pool
+    tracing::info!("Connecting to Redis at {}...", config.redis_url);
+    let redis_cfg = RedisConfig::from_url(&config.redis_url);
+    let redis_pool = redis_cfg
+        .create_pool(Some(Runtime::Tokio1))
+        .map_err(|e| anyhow::anyhow!("Failed to create Redis pool: {}", e))?;
+
     let state = Arc::new(AppState {
         start_time: Instant::now(),
         db_pool,
+        redis_pool,
         http_client: reqwest::Client::new(),
         lez_rpc_url: config.lez_rpc_url,
         event_bus: EventBus::new(),
@@ -104,17 +115,28 @@ async fn main() -> anyhow::Result<()> {
         .route("/health", get(routes::health::health_check))
         // WebSocket event stream
         .route("/api/ws", get(routes::ws::ws_handler))
+        // Protected routes (require JWT auth)
+        .nest(
+            "/api",
+            Router::new()
+                .route("/proposals", post(routes::proposals::create_proposal))
+                .route("/approvals", post(routes::approvals::submit_approval))
+                .route_layer(axum::middleware::from_fn_with_state(
+                    state.clone(),
+                    middleware::auth::auth_middleware,
+                )),
+        )
+        // Public API routes
+        // Auth
+        .route("/api/auth/token", post(routes::auth::generate_token))
         // Multisigs
         .route("/api/multisigs", get(routes::multisigs::list_multisigs))
         .route("/api/multisigs", post(routes::multisigs::create_multisig))
         .route("/api/multisigs/{id}", get(routes::multisigs::get_multisig))
         .route("/api/multisigs/{id}/members", get(routes::multisigs::get_members))
-        // Proposals
+        // Proposals (read-only are public)
         .route("/api/proposals", get(routes::proposals::list_proposals))
-        .route("/api/proposals", post(routes::proposals::create_proposal))
         .route("/api/proposals/{id}", get(routes::proposals::get_proposal))
-        // Approvals
-        .route("/api/approvals", post(routes::approvals::submit_approval))
         // Proofs
         .route("/api/proofs/generate", post(routes::proofs::generate_proof))
         .route("/api/proofs/{id}", get(routes::proofs::get_proof))

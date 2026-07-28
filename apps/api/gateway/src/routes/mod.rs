@@ -1,4 +1,5 @@
 pub mod approvals;
+pub mod auth;
 pub mod execute;
 pub mod health;
 pub mod metrics;

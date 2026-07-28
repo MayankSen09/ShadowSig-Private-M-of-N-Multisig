@@ -4,6 +4,7 @@ use axum::{
     Json,
 };
 use chrono::Utc;
+use redis::AsyncCommands;
 use shadowsig_event_service::{Event, EventType};
 use shadowsig_shared::models::*;
 use std::sync::Arc;
@@ -186,18 +187,40 @@ pub async fn create_multisig(
 pub async fn get_multisig(
     State(state): State<Arc<AppState>>,
     Path(id): Path<Uuid>,
-) -> Json<ApiResponse<Option<Multisig>>> {
+) -> Json<ApiResponse<Multisig>> {
+    let cache_key = format!("multisig:{}", id);
+
+    // 1. Try fetching from Redis cache first
+    if let Ok(mut redis_conn) = state.redis_pool.get().await {
+        if let Ok(cached_data) = redis_conn.get::<_, Option<String>>(&cache_key).await {
+            if let Some(data) = cached_data {
+                if let Ok(multisig) = serde_json::from_str(&data) {
+                    tracing::debug!("Cache hit for {}", cache_key);
+                    return Json(ApiResponse::ok(multisig));
+                }
+            }
+        }
+    }
+
+    // 2. Cache miss — fetch from PostgreSQL
+    tracing::debug!("Cache miss for {} — fetching from DB", cache_key);
     match sqlx::query_as::<_, Multisig>("SELECT * FROM multisigs WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db_pool)
         .await
     {
-        Ok(result) => {
-            tracing::debug!("Fetching multisig: {} — found: {}", id, result.is_some());
-            Json(ApiResponse::ok(result))
+        Ok(Some(multisig)) => {
+            // 3. Write back to cache with 5 minute (300s) TTL
+            if let Ok(mut redis_conn) = state.redis_pool.get().await {
+                if let Ok(json_data) = serde_json::to_string(&multisig) {
+                    let _: Result<(), _> = redis_conn.set_ex(&cache_key, json_data, 300).await;
+                }
+            }
+            Json(ApiResponse::ok(multisig))
         }
+        Ok(None) => Json(ApiResponse::err("MultisigNotFound".to_string())),
         Err(e) => {
-            tracing::error!("Failed to get multisig: {:?}", e);
+            tracing::error!("Database error fetching multisig: {:?}", e);
             Json(ApiResponse::err(e.to_string()))
         }
     }

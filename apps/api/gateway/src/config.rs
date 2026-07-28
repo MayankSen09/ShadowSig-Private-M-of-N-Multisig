@@ -5,6 +5,7 @@ pub struct Config {
     pub database_url: String,
     pub redis_url: String,
     pub lez_rpc_url: String,
+    pub jwt_secret: String,
     pub host: String,
     pub port: u16,
     /// Maximum number of connections in the Postgres pool (default: 10).
@@ -21,6 +22,8 @@ impl Config {
                 .unwrap_or_else(|_| "redis://localhost:6379".to_string()),
             lez_rpc_url: std::env::var("LEZ_RPC_URL")
                 .unwrap_or_else(|_| "http://lez-node:9090".to_string()),
+            jwt_secret: std::env::var("JWT_SECRET")
+                .unwrap_or_else(|_| "default-insecure-secret-for-dev".to_string()),
             host: std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),
             port: std::env::var("PORT")
                 .ok()
